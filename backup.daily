@@ -1,0 +1,54 @@
+#!/bin/bash
+#/home/drake/scripts/backup.daily
+
+#########################################################################
+# backup the packages and configs daily.				#
+#									#
+# pretty much everything I edit is in either /home or /etc,  and I	#
+# don't tend to install packes all that often, so overwriting things	#
+# is not that much of an issue.  could be weekly, but I wan't to	#
+# archive them weekly.							#
+#########################################################################
+
+############
+# packages #
+############
+
+# list all installed packages, and back them up weekly (separate script)
+
+# cycle the files down the list (local only)
+
+/bin/rm /media/storage/backup/files/packages/packages.7.txt
+
+/bin/mv /media/storage/backup/files/packages/packages.6.txt /media/storage/backup/files/packages/packages.7.txt
+/bin/mv /media/storage/backup/files/packages/packages.5.txt /media/storage/backup/files/packages/packages.6.txt
+/bin/mv /media/storage/backup/files/packages/packages.4.txt /media/storage/backup/files/packages/packages.5.txt
+/bin/mv /media/storage/backup/files/packages/packages.3.txt /media/storage/backup/files/packages/packages.4.txt
+/bin/mv /media/storage/backup/files/packages/packages.2.txt /media/storage/backup/files/packages/packages.3.txt
+/bin/mv /media/storage/backup/files/packages/packages.1.txt /media/storage/backup/files/packages/packages.2.txt
+/bin/mv /media/storage/backup/files/packages/packages.0.txt /media/storage/backup/files/packages/packages.1.txt
+
+#create the new versions.  (dropbox and local)
+/usr/bin/dpkg-query -l > /media/storage/backup/files/packages/packages.0.txt
+/usr/bin/dpkg-query -l > /home/drake/Dropbox/maintenance_scripts/txt_files/packages.txt
+
+###########
+# configs #
+###########
+
+#sync the config directories with the backup directories (daily)
+
+#sync /etc/
+/usr/bin/rsync -au --delete /etc/ /media/storage/backup/files/etc/ &
+
+#sync /home/
+#exclude Dropbox because that is backed up by dropbox
+/usr/bin/rsync -au --delete --safe-links /home/ /media/storage/backup/files/home/ --exclude=/drake/Dropbox/ --exclude=/drake/.cache/ --exclude=/drake/Downloads/ --exclude=/drake/VirtualBox* --exclude=/drake/.local/share/Steam/ --exclude=/drake/.phoronix-test-suite/ &
+
+##############
+# VirtualBox #
+##############
+
+/usr/bin/rsync -au /home/drake/VirtualBox\ VMs/ /media/storage/backup/VirtualBox-VMs/ &
+
+

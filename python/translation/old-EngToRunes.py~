@@ -1,0 +1,117 @@
+#!/usr/bin/python
+#coding=utf-8
+
+import sys
+import codecs
+import copy
+
+def importText(infile):
+	#f = open(infile, 'r')
+	
+	text = []
+	with codecs.open(infile, 'r', encoding='utf-8') as f:
+		while True:
+			char = f.read(1)
+			if not char: break
+			else: text.append(char)
+
+	for i in range(len(text)):
+		tmp = unicode(text[i]).encode('utf-8')
+		text[i] = tmp
+
+	return text
+
+#def createRunes(latin):
+
+def combine(s):
+	
+	#loop through entire list of characters:
+	#if char is e or i:
+		#if next is o or a, combine and remove
+
+#	print len(s)
+	
+	for x in range(len(s)):
+		if s[x] == 'i' or s[x] == 'e':
+			if s[x+1] == 'o' or s[x+1] == 'a':
+				first = s[x]
+				second = s[x+1]
+				combo = first + second
+				s[x] = combo
+				s.pop(x+1)
+				s.append('')
+#		print s[x]		
+#	print len(s)
+
+def convertToRunes(s, runeDict):
+
+	for i in range(len(s)):
+		if s[i] in runeDict:
+#			print('found {0} in rune dict: {1}'.format(s[i], runeDict[s[i]].decode('utf-8')))
+			s[i] = runeDict[s[i]]	
+		else:
+			print('didnt find a match in dict!')
+
+
+def main(args):
+	
+#	toRunes = {'f':u'\xe1\x9a\xA0', 'u':u'\xe1\x9a\xA2', 'þ':u'\xe1\x9a\xA6', 'ð':u'\xe1\x9a\xA6', 
+#	'o':u'\xe1\x9a\xA9', 'r':u'\xe1\x9a\xb1', 'c':u'\xe1\x9a\xb3', 'g':u'\xe1\x9a\xb7', 
+#	'w':u'\xe1\x9a\xb9', 'h':u'\xe1\x9a\xbb', 'n':u'\xe1\x9a\xbe', 'i':u'\xe1\x9a\xc1', 
+#	'j':u'\xe1\x9a\xc4', 'eo':u'\xe1\x9a\xc7', 'p':u'\xe1\x9a\xc8', 'x':u'\xe1\x9a\xc9',
+#	's':u'\xe1\x9a\xcb', 't':u'\xe1\x9a\xcf', 'b':u'\xe1\x9a\xd2', 'e':u'\xe1\x9a\xd6', 
+#	'm':u'\xe1\x9a\xd7', 'l':u'\xe1\x9a\xda', 'ŋ':uu'\xe1\x9b\x9d', 
+#	'œ':u'\xe1\x9a\xdf', 'd':u'\xe1\x9a\xde', 'a':u'\xe1\x9a\xAA', 'æ':u'\xe1\x9a\xAb', 
+#	'y':u'\xe1\x9a\xA3', 'ia':u'\xe1\x9a\xe1', 'io':u'\xe1\x9a\xe1', 'ea':u'\16e0',
+#	' ':' ', '.':'.', ',':',', ';':';', '\n':'\n'} 
+
+	toRunes = {'f':u'\xe1\x9a\xa0', 'u':u'\xe1\x9a\xa2', 'þ':u'\xe1\x9a\xA6', 'ð':u'\xe1\x9a\xA6', 
+	'o':u'\xe1\x9a\xA9', 'r':u'\xe1\x9a\xb1', 'c':u'\xe1\x9a\xb3', 'g':u'\xe1\x9a\xb7', 
+	'w':u'\xe1\x9a\xb9', 'h':u'\xe1\x9a\xbb', 'n':u'\xe1\x9a\xbe', 'i':u'\xe1\x9b\x81', 
+	'j':u'\xe1\x9b\x84', 'eo':u'\xe1\x9b\x87', 'p':u'\xe1\x9b\x88', 'x':u'\xe1\x9b\x89',
+	's':u'\xe1\x9b\x8b', 't':u'\xe1\x9b\x8f', 'b':u'\xe1\x9b\x92', 'e':u'\xe1\x9b\x96', 
+	'm':u'\xe1\x9b\x97', 'l':u'\xe1\x9b\x9a', 'ŋ':u'\xe1\x9b\x9d', 
+	'œ':u'\xe1\x9b\x9f', 'd':u'\xe1\x9b\x9e', 'a':u'\xe1\x9a\xAA', 'æ':u'\xe1\x9a\xAb', 
+	'y':u'\xe1\x9a\xA3', 'ia':u'\xe1\x9b\xa1', 'io':u'\xe1\x9b\xa1', 'ea':u'\xe1\x9b\xa0',
+	' ':' ', '.':'.', ',':',', ';':';', '\n':'\n', '':''} 
+
+	raw = importText(args[1])
+
+	tmp = ''
+	for i in range(len(raw)):
+		tmp = tmp + raw[i]
+
+#	print tmp
+
+#	for i in range(len(raw)):
+#		if raw[i] == u'\u00fe':
+#			print('found a small thorn')
+
+	combine(raw)
+
+#	print raw
+
+	runes = copy.deepcopy(raw)
+
+	convertToRunes(runes, toRunes)
+
+#	print runes
+
+#	print u'\xe1\x9b\x9d'
+
+#	print toRunes
+
+	tmp = ''
+	for i in range(len(raw)):
+		tmp = tmp + raw[i]
+
+	print tmp
+
+	tmp2 = ''
+	u = 'u'
+	for i in range(len(runes)):
+		print runes[i]
+
+	print runes
+
+main(sys.argv)
