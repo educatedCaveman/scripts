@@ -2,12 +2,14 @@
 #script to add, commit, and push git chnages
 #need to consider working directory?
 
-#test:
-#read -p "enter message: " cm
-#echo "your message was: $cm"
-
 #git:
+echo "adding all files to git..."
 git add *
-read -p "enter commit message: " cm
+echo "done!"
+read -p "enter commit message:  " cm
+echo "committing..."
 git commit -m "$cm"
+echo "done!"
+echo "pushing changes to GitHub..."
 git push origin master
+echo "done!"

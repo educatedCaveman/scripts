@@ -8,15 +8,6 @@ eno1: flags=4163<UP,BROADCAST,RUNNING,MULTICAST>  mtu 1500
         TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0
         device interrupt 20  memory 0xfbf00000-fbf20000  
 
-lo: flags=73<UP,LOOPBACK,RUNNING>  mtu 65536
-        inet 127.0.0.1  netmask 255.0.0.0
-        inet6 ::1  prefixlen 128  scopeid 0x10<host>
-        loop  txqueuelen 1000  (Local Loopback)
-        RX packets 2486  bytes 264412 (264.4 KB)
-        RX errors 0  dropped 0  overruns 0  frame 0
-        TX packets 2486  bytes 264412 (264.4 KB)
-        TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0
-
 tun0: flags=4305<UP,POINTOPOINT,RUNNING,NOARP,MULTICAST>  mtu 1500
         inet 10.10.0.54  netmask 255.255.255.255  destination 10.10.0.53
         inet6 fe80::613:c31:2188:8105  prefixlen 64  scopeid 0x20<link>
