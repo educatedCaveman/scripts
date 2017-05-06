@@ -6,6 +6,8 @@
 #   * tailor output (e.g., "done!" depending on success/failure of previous command
 #   * add to path
 
+echo "$(pwd)"
+
 #git:
 echo "adding all files to git..."
 git add *

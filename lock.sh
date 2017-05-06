@@ -16,7 +16,8 @@ trap clean_up SIGHUP SIGINT SIGTERM
 
 ffmpeg -loglevel quiet -y -s "$RES" -f x11grab -i "${DISPLAY}" -vframes 1 -vf "gblur=sigma=100" "$TEMP_FILE"
 #xset +dpms dpms "$TIMEOUT"  "$TIMEOUT"  "$TIMEOUT" 
-xset +dpms dpms 60 60 60 
+xset +dpms dpms 10 10 10 
 #i3lock -I "$TIMEOUT" -nei "$TEMP_FILE"
-i3lock -I 60 -nei "$TEMP_FILE"
+#i3lock -I 60 -nei "$TEMP_FILE"
+i3lock -nei "$TEMP_FILE"
 clean_up
