@@ -1,6 +1,5 @@
 #!/bin/bash
 #script to add, commit, and push git chnages
-#need to consider working directory?
 
 #TODO:
 #   * only run subsequent commands if previous successful
