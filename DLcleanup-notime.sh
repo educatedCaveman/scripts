@@ -26,7 +26,7 @@ do
     if [ -e "$file" ]
     then
     #mv -- "$f" $pics
-    find $downloads$file -type f -mtime +3 -exec mv '{}' $pics \;
+    find $downloads$file -type f -exec mv '{}' $pics \;
     fi
 done
 
@@ -37,7 +37,7 @@ do
     if [ -e "$file" ]
     then
     #mv -- "$f" $video
-    find $downloads$file -type f -mtime +3 -exec mv '{}' $video \;
+    find $downloads$file -type f -exec mv '{}' $video \;
     fi
 done
 
@@ -48,7 +48,7 @@ done
 #    if [ -e "$file" ]
 #    then
 #    #mv -- "$f" $zip
-#    find $downloads$file -type f -mtime +3 -exec mv '{}' $zip \;
+#    find $downloads$file -type f -exec mv '{}' $zip \;
 #    fi
 #done
 
@@ -58,7 +58,7 @@ do
     if [ -e "$file" ]
     then
     #mv -- "$f" $archives
-    find $downloads$file -type f -mtime +3 -exec mv '{}' $archives \;
+    find $downloads$file -type f -exec mv '{}' $archives \;
     fi
 done
 
@@ -68,7 +68,7 @@ do
     if [ -e "$file" ]
     then
     #mv -- "$f" $ISO
-    find $downloads$file -type f -mtime +3 -exec mv '{}' $ISO \;
+    find $downloads$file -type f -exec mv '{}' $ISO \;
     fi
 done
 
@@ -76,7 +76,7 @@ for file in *.crdownload
 do
     if [ -e "$file" ]
     then
-        find $downloads$file -type f -mtime +3 -exec rm '{}' \;
+        find $downloads$file -type f -exec rm '{}' \;
     fi
 done
 
