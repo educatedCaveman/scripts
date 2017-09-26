@@ -11,15 +11,6 @@ cd $downloads   #just in case i move this later...
 
 rename "s/ /_/g" /home/drake/Downloads/*
 
-#.jpg
-#for f in *.jpg
-#do
-#if [ -e $f ]    #only proceed if file exists
-#    then
-#    mv -- $f $pics    #move file to temp pictures folder
-#    fi
-#done
-
 #images
 for file in *.jpg *.jpeg *.JPG *.JPEG *.png *.gif *Imgur.zip
 do
@@ -41,16 +32,15 @@ do
     fi
 done
 
-
-##zipfiles
-#for file in *.zip
-#do
-#    if [ -e "$file" ]
-#    then
-#    #mv -- "$f" $zip
-#    find $downloads$file -type f -exec mv '{}' $zip \;
-#    fi
-#done
+#zipfiles
+for file in *.zip
+do
+    if [ -e "$file" ]
+    then
+    #mv -- "$f" $zip
+    find $downloads$file -type f -exec mv '{}' $zip \;
+    fi
+done
 
 #archives
 for file in *.deb *.tar.gz *.xz
