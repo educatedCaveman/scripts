@@ -15,3 +15,4 @@ i3-msg move scratchpad
 
 #reset mouse position:
 xdotool mousemove $xpos $ypos
+xdotool click 1
