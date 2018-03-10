@@ -8,6 +8,8 @@ archives="/home/drake/archives/"
 ISO="/media/storage/ISOs/"
 
 cd $downloads   #just in case i move this later...
+/home/drake/scripts/DLfilenames.sh
+rm *\(1\)*
 
 rename "s/ /_/g" /home/drake/Downloads/*
 
