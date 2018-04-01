@@ -18,3 +18,8 @@
 
 #ISOs
 /usr/bin/rsync -au /media/storage/ISOs/ /media/mobius/Backup/ISOs/ &
+
+#Documents
+/usr/bin/rsync -au /home/drake/Documents/ /media/mobius/Documents/ &
+
+
