@@ -4,7 +4,7 @@
 #pictures
 /usr/bin/rsync -au /home/drake/Pictures/ /media/mobius/Pictures/ &
 /usr/bin/rsync -au /media/storage/Pictures/temp/ /media/mobius/pr0n/pics/ &
-/usr/bin/rsync -au /media/storage/Pictures/ /media/mobius/Pictures/ &
+/usr/bin/rsync -au /media/storage/Pictures/ /media/mobius/Pictures/ --exclude=/temp/ &
 /usr/bin/rsync -au /home/drake/Screenshots/ /media/mobius/Pictures/Screenshots/ &
 
 #video
