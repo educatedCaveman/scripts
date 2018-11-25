@@ -7,62 +7,63 @@ zip="/media/storage/Pictures/picArchives/"
 archives="/home/drake/archives/"
 ISO="/media/storage/ISOs/"
 
-cd $downloads   #just in case i move this later...
+cd "${downloads}"   #just in case i move this later...
 #/home/drake/scripts/DLfilenames.sh
 #rm *\(1\)*
 
-rename "s/ /_/g" /home/drake/Downloads/*
+#shouldn't be needed now
+#rename "s/ /_/g" *
 
 #images
 for file in *.jpg *.jpeg *.JPG *.JPEG *.png *.gif *Imgur.zip
 do
-    if [ -e "$file" ]
+    if [ -e "${file}" ]
     then
-    find $downloads$file -type f -mtime +3 -exec mv '{}' $pics \;
+    find "${downloads}${file}" -type f -mtime +2 -exec mv '{}' "${pics}" \;
     fi
 done
 
 #videos
 for file in *.mp4 *.MP4 *.webm *.flv *.gifv *.swf *.mov
 do
-    if [ -e "$file" ]
+    if [ -e "${file}" ]
     then
-    find $downloads$file -type f -mtime +3 -exec mv '{}' $video \;
+    find "${downloads}${file}" -type f -mtime +2 -exec mv '{}' "${video}" \;
     fi
 done
 
 #zipfiles
 for file in *.zip
 do
-    if [ -e "$file" ]
+    if [ -e "${file}" ]
     then
-    find $downloads$file -type f -mtime +3 -exec mv '{}' $zip \;
+    find "${downloads}${file}" -type f -mtime +2 -exec mv '{}' "${zip}" \;
     fi
 done
 
 #archives
 for file in *.deb *.tar.gz *.xz
 do
-    if [ -e "$file" ]
+    if [ -e "${file}" ]
     then
-    find $downloads$file -type f -mtime +3 -exec mv '{}' $archives \;
+    find "${downloads}${file}" -type f -mtime +2 -exec mv '{}' "${archives}" \;
     fi
 done
 
 #ISOs/images
 for file in *.iso *.img
 do
-    if [ -e "$file" ]
+    if [ -e "${file}" ]
     then
-    find $downloads$file -type f -mtime +3 -exec mv '{}' $ISO \;
+    find "${downloads}${file}" -type f -mtime +2 -exec mv '{}' "${ISO}" \;
     fi
 done
 
 for file in *.crdownload
 do
-    if [ -e "$file" ]
+    if [ -e "${file}" ]
     then
-        find $downloads$file -type f -mtime +3 -exec rm '{}' \;
+        find "${downloads}${file}" -type f -mtime +2 -exec rm '{}' \;
     fi
 done
 

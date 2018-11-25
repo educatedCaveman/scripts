@@ -29,8 +29,8 @@
 /bin/mv /media/storage/backup/files/packages/packages.0.txt /media/storage/backup/files/packages/packages.1.txt
 
 #create the new versions.  (dropbox and local)
-/usr/bin/dpkg-query -l > /media/storage/backup/files/packages/packages.0.txt
-/usr/bin/dpkg-query -l > /home/drake/Dropbox/maintenance_scripts/txt_files/packages.txt
+/usr/bin/pacman -Q > /media/storage/backup/files/packages/packages.0.txt
+/usr/bin/pacman -Q > /home/drake/Dropbox/maintenance_scripts/txt_files/packages.txt
 
 ###########
 # configs #

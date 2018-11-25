@@ -3,26 +3,11 @@
 
 #move archives down the list
 
-#/bin/rm /media/storage/backup/archives/backup8.pigz.tar.gz
 /bin/rm /media/storage/backup/archives/backup3.pigz.tar.gz
 
-#/bin/mv /media/storage/backup/archives/backup7.pigz.tar.gz /media/storage/backup/archives/backup8.pigz.tar.gz
-##/bin/mv /media/storage/backup/archives/backup7.tar.gz /media/storage/backup/archives/backup8.tar.gz
-#/bin/mv /media/storage/backup/archives/backup6.pigz.tar.gz /media/storage/backup/archives/backup7.pigz.tar.gz
-##/bin/mv /media/storage/backup/archives/backup6.tar.gz /media/storage/backup/archives/backup7.tar.gz
-#/bin/mv /media/storage/backup/archives/backup5.pigz.tar.gz /media/storage/backup/archives/backup6.pigz.tar.gz
-##/bin/mv /media/storage/backup/archives/backup5.tar.gz /media/storage/backup/archives/backup6.tar.gz
-#/bin/mv /media/storage/backup/archives/backup4.pigz.tar.gz /media/storage/backup/archives/backup5.pigz.tar.gz
-##/bin/mv /media/storage/backup/archives/backup4.tar.gz /media/storage/backup/archives/backup5.tar.gz
-#/bin/mv /media/storage/backup/archives/backup3.pigz.tar.gz /media/storage/backup/archives/backup4.pigz.tar.gz
-##/bin/mv /media/storage/backup/archives/backup3.tar.gz /media/storage/backup/archives/backup4.tar.gz
 /bin/mv /media/storage/backup/archives/backup2.pigz.tar.gz /media/storage/backup/archives/backup3.pigz.tar.gz
-#/bin/mv /media/storage/backup/archives/backup2.tar.gz /media/storage/backup/archives/backup3.tar.gz
 /bin/mv /media/storage/backup/archives/backup1.pigz.tar.gz /media/storage/backup/archives/backup2.pigz.tar.gz
-#/bin/mv /media/storage/backup/archives/backup1.tar.gz /media/storage/backup/archives/backup2.tar.gz
 /bin/mv /media/storage/backup/archives/backup0.*.pigz.tar.gz /media/storage/backup/archives/backup1.pigz.tar.gz
 
 #make new archive (date just to know how old it is)
-
-#/bin/tar -czf /media/storage/backup/archives/backup0.$(date +%Y-%m-%d).tar.gz /media/storage/backup/files/
 /bin/tar -cf /media/storage/backup/archives/backup0.$(date +%Y-%m-%d).pigz.tar.gz --use-compress-prog=pigz /media/storage/backup/files/
