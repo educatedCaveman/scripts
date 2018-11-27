@@ -37,26 +37,35 @@ for output in "${outlist[@]}"; do
 done
 
 #run swaylock, cleaning up after
-swayidle timeout "${timeout}" 'swaymsg "output * dpms off"' resume 'swaymsg "output * dpms on"' &
+#swayidle timeout "${timeout}" 'swaymsg "output * dpms off"' resume 'swaymsg "output * dpms on"' &
 
 #check for hibernate arg:
 if [[ "${arg}" == "hibernate" ]];
 then
-    echo "we should hibernate"
+    #echo "we should hibernate"
     #swaylock in bg, save PID, hibernate, wait for swaylock to be complete
+    #swayidle timeout "${timeout}" 'swaymsg "output * dpms off"' resume 'swaymsg "output * dpms on"' &
     swaylock -C "$tmpconf" &
     PID=$!    
     sleep 5     #wait just a bit for swaylock
+    swaymsg "output * dpms off"
     sudo pm-hibernate
+    swaymsg "output * dpms on"
     wait $PID
-else
-    echo "we should just lock"
-    #just swaylock
+elif [[ "${arg}" == "idle" ]];
+then
+    #echo "just lock, no dpms"
     swaylock -C "$tmpconf"
+else
+    #echo "we should just lock"
+    #just swaylock
+    swayidle timeout "${timeout}" 'swaymsg "output * dpms off"' resume 'swaymsg "output * dpms on"' &
+    swaylock -C "$tmpconf"
+    pkill -n swayidle
 fi
 
 #clean up:
-pkill -n swayidle
+#pkill -n swayidle
 rm "$tmpconf" 
 for file in "${tmpPics[@]}"; do
     rm "${file}"
