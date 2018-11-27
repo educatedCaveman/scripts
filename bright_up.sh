@@ -1,8 +1,10 @@
 #!/bin/bash
 #increase brightness
 
-max_bright=$(cat /sys/class/backlight/intel_backlight/max_brightness)
-brightness=$(cat /sys/class/backlight/intel_backlight/brightness)
+#max_bright=$(cat /sys/class/backlight/intel_backlight/max_brightness)
+#brightness=$(cat /sys/class/backlight/intel_backlight/brightness)
+max_bright=$(brightnessctl m)
+brightness=$(brightnessctl get)
 
 if [ "$brightness" -le 0 ]; then
     #set brightness = 1
@@ -28,6 +30,6 @@ elif [ "$brightness" -gt 1 ]; then
     fi
 fi
 
-
-echo "echo $brightness > /sys/class/backlight/intel_backlight/brightness" | sudo bash
-echo "new brightness: $brightness"
+#echo "echo $brightness > /sys/class/backlight/intel_backlight/brightness" | sudo bash
+#echo "new brightness: $brightness"
+brightnessctl set "${brightness}"

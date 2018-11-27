@@ -1,7 +1,8 @@
 #!/bin/bash
 #decredse brightness
 
-brightness=$(cat /sys/class/backlight/intel_backlight/brightness)
+#brightness=$(cat /sys/class/backlight/intel_backlight/brightness)
+brightness=$(brightnessctl get)
 
 if [ "$brightness" -gt 900 ]; then
     #set brightness = 900
@@ -21,6 +22,6 @@ elif [ "$brightness" -le 900 ]; then
     fi
 fi
 
-
-echo "echo $brightness > /sys/class/backlight/intel_backlight/brightness" | sudo bash
-echo "new brightness: $brightness"
+#echo "echo $brightness > /sys/class/backlight/intel_backlight/brightness" | sudo bash
+#echo "new brightness: $brightness"
+brightnessctl set "${brightness}"
