@@ -13,9 +13,6 @@ echo "the output of 'df -h' is shown below" >> "${ERRMSG}"
 echo "" >> "${ERRMSG}"
 df -h >> "${ERRMSG}"
 
-#sendemail -f drake@rclone.vm -t alerts.drake@gmail.com -u "testing" -m "testing sending an email from command line" -s smtp.gmail.com:587 -xu alerts.drake@gmail.com -xp "ercooaejucxkyqqf" -o tls=yes
-
-#/usr/bin/sendemail -f "${FROM}" -t "${TO}" -u "${SUBJ}" -m "${MESG}" -s smtp.gmail.com:587 -xu "${TO}" -xp "${PASS}" -o tls=yes
 /usr/bin/sendemail -f "${FROM}" -t "${TO}" -u "${SUBJ}" -o message-file="${ERRMSG}" -s smtp.gmail.com:587 -xu "${TO}" -xp "${PASS}" -o tls=yes
 
 rm "${ERRMSG}"

@@ -15,7 +15,4 @@ echo "a summary of the stats is listed below:" >> "${MSG}"
 echo "" >> "${MSG}"
 cat "${STATS}" >> "${MSG}"
 
-#sendemail -f drake@rclone.vm -t alerts.drake@gmail.com -u "testing" -m "testing sending an email from command line" -s smtp.gmail.com:587 -xu alerts.drake@gmail.com -xp "ercooaejucxkyqqf" -o tls=yes
-
-#/usr/bin/sendemail -f "${FROM}" -t "${TO}" -u "${SUBJ}" -m "${MESG}" -s smtp.gmail.com:587 -xu "${TO}" -xp "${PASS}" -o tls=yes
 /usr/bin/sendemail -f "${FROM}" -t "${TO}" -u "${SUBJ}" -o message-file="${MSG}" -a "${CONTROLLOG}" -a "${RCLONELOG}" -s smtp.gmail.com:587 -xu "${TO}" -xp "${PASS}" -o tls=yes
