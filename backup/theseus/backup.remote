@@ -1,0 +1,52 @@
+#!/bin/bash
+#script to backup files to the appropriate remote location
+REMOTE_PICS=$(df | grep "Pictures")
+REMOTE_PORN=$(df | grep "pr0n")
+REMOTE_BACKUP=$(df | grep "Backup")
+REMOTE_DOCS=$(df | grep "Documents")
+
+#if remote destinations aren't mounted, don't do anything
+if [ -z "${REMOTE_PICS}" ]
+then
+    exit 1
+fi
+
+if [ -z "${REMOTE_PORN}" ]
+then
+    exit 1
+fi
+
+if [ -z "${REMOTE_BACKUP}" ]
+then
+    exit 1
+fi
+
+if [ -z "${REMOTE_DOCS}" ]
+then
+    exit 1
+fi
+
+#sync directories:
+#pictures
+/usr/bin/rsync -au /home/drake/Pictures/ /media/mobius/Pictures/ &
+/usr/bin/rsync -au /media/storage/Pictures/temp/ /media/mobius/pr0n/pics/ --exclude=/imgur_zips/ &
+/usr/bin/rsync -au /media/storage/Pictures/ /media/mobius/Pictures/ --exclude=/temp/ &
+/usr/bin/rsync -au /home/drake/Screenshots/ /media/mobius/Pictures/Screenshots/ &
+
+#video
+/usr/bin/rsync -au /media/storage/Videos/ /media/mobius/pr0n/video/ &
+
+#zips
+/usr/bin/rsync -au /media/storage/Pictures/picArchives/ /media/mobius/pr0n/imgur_zips/ &
+/usr/bin/rsync -au /media/storage/Pictures/temp/imgur_zips/ /media/mobius/pr0n/imgur_zips/ &
+
+#archives
+/usr/bin/rsync -au /home/drake/archives/ /media/mobius/Backup/archives/ &
+
+#ISOs
+/usr/bin/rsync -au /media/storage/ISOs/ /media/mobius/Backup/ISOs/ &
+
+#Documents
+/usr/bin/rsync -au /home/drake/Documents/ /media/mobius/Documents/ &
+
+
