@@ -49,4 +49,6 @@ fi
 #Documents
 /usr/bin/rsync -au /home/drake/Documents/ /media/mobius/Documents/ &
 
-
+#freenas .db:
+/usr/bin/rsync -au /home/drake/Downloads/*.db /media/mobius/Backup/freenas/ &
+/usr/bin/rsync -au /home/drake/Downloads/*.db /home/drake/Dropbox/freenas/ &
