@@ -9,6 +9,7 @@ PFSENSE_CONFIG="/media/mobius/Backup/pfsense/"
 FREENAS_DB="/media/mobius/Backup/freenas/"
 BACKUP=$(df | grep "Backup")
 PORN=$(df | grep "pr0n")
+FREENAS_DROPBOX="/home/drake/Dropbox"
 
 if [ -z "${BACKUP}" ];
 then
@@ -40,6 +41,7 @@ do
     if [ -e "${file}" ]
     then
     find "${DOWNLOADS}${file}" -type f -mtime +2 -exec cp '{}' "${FREENAS_DB}" \;
+    find "${DOWNLOADS}${file}" -type f -mtime +2 -exec cp '{}' "${FREENAS_DROPBOX}" \;
     fi
 done
 
