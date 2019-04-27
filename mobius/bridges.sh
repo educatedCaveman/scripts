@@ -59,22 +59,28 @@ done
 sleep 1
 #destroy the bridges to undo what is done by default:
 if [ "$(/sbin/ifconfig | /usr/bin/grep ^${BRIDGE0}:)" ];
+then
     /sbin/ifconfig "${BRIDGE0}" destroy
 fi
 if [ "$(/sbin/ifconfig | /usr/bin/grep ^${BRIDGE1}:)" ];
+then   
     /sbin/ifconfig "${BRIDGE1}" destroy
 fi
 if [ "$(/sbin/ifconfig | /usr/bin/grep ^${BRIDGE2}:)" ];
+then
     /sbin/ifconfig "${BRIDGE2}" destroy
 fi
 #exit if the bridges still exist:
 if [ "$(/sbin/ifconfig | /usr/bin/grep ^${BRIDGE0}:)" ];
+then
     exit 1
 fi
 if [ "$(/sbin/ifconfig | /usr/bin/grep ^${BRIDGE1}:)" ];
+then
     exit 1
 fi
 if [ "$(/sbin/ifconfig | /usr/bin/grep ^${BRIDGE2}:)" ];
+then
     exit 1
 fi
 
