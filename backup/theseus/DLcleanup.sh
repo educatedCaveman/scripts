@@ -10,6 +10,15 @@ ZIP="/media/storage/Pictures/temp/imgur_zips/"
 #needed for the find statements to work
 cd "${DOWNLOADS}"
 
+#clean up image filenames:
+#trim off things after the extension
+for f in *.jpg?*; mv $f $(ls $f | sed 's/jpg.*/jpg/')
+for f in *.jpeg?*; mv $f $(ls $f | sed 's/jpeg.*/jpeg/')
+for f in *.JPG?*; mv $f $(ls $f | sed 's/JPG.*/JPG/')
+for f in *.JPEG?*; mv $f $(ls $f | sed 's/JPEG.*/JPEG/')
+for f in *.png?*; mv $f $(ls $f | sed 's/png.*/png/')
+for f in *.gif?*; mv $f $(ls $f | sed 's/gif.*/gif/')
+
 #images
 for file in *.jpg *.jpeg *.JPG *.JPEG *.png *.gif
 do
