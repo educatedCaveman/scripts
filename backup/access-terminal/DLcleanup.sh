@@ -9,7 +9,7 @@ PFSENSE_CONFIG="/media/mobius/Backup/pfsense/"
 FREENAS_DB="/media/mobius/Backup/freenas/"
 BACKUP=$(df | grep "Backup")
 PORN=$(df | grep "pr0n")
-FREENAS_DROPBOX="/home/drake/Dropbox"
+FREENAS_DROPBOX="/home/drake/Dropbox/freenas/"
 
 if [ -z "${BACKUP}" ];
 then
@@ -25,6 +25,51 @@ fi
 
 #needed for the find statements to work, even when given absolute paths
 cd "${DOWNLOADS}"   #just in case i move this later...
+
+#clean up image filenames:
+#trim off things after the extension
+for file in *.jpg?*
+do
+    if [ -e "${file}" ]
+    then
+        mv "${file}" $(ls "${file}" | sed 's/jpg.*/jpg/')
+    fi
+done
+for file in *.jpeg?*
+do
+    if [ -e "${file}" ]
+    then
+        mv "${file}" $(ls "${file}" | sed 's/jpeg.*/jpeg/')
+    fi
+done
+for file in *.JPG?*
+do
+    if [ -e "${file}" ]
+    then
+        mv "${file}" $(ls "${file}" | sed 's/JPG.*/JPG/')
+    fi
+done
+for file in *.JPEG?*
+do
+    if [ -e "${file}" ]
+    then
+        mv "${file}" $(ls "${file}" | sed 's/JPEG.*/JPEG/')
+    fi
+done
+for file in *.png?*
+do
+    if [ -e "${file}" ]
+    then
+        mv "${file}" $(ls "${file}" | sed 's/png.*/png/')
+    fi
+done
+for file in *.gif?*
+do
+    if [ -e "${file}" ]
+    then
+        mv "${file}" $(ls "${file}" | sed 's/gif.*/gif/')
+    fi
+done
 
 #pfsense xml files: COPY only
 for file in config-*.xml
