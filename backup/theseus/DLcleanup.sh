@@ -12,12 +12,48 @@ cd "${DOWNLOADS}"
 
 #clean up image filenames:
 #trim off things after the extension
-for f in *.jpg?*; mv $f $(ls $f | sed 's/jpg.*/jpg/')
-for f in *.jpeg?*; mv $f $(ls $f | sed 's/jpeg.*/jpeg/')
-for f in *.JPG?*; mv $f $(ls $f | sed 's/JPG.*/JPG/')
-for f in *.JPEG?*; mv $f $(ls $f | sed 's/JPEG.*/JPEG/')
-for f in *.png?*; mv $f $(ls $f | sed 's/png.*/png/')
-for f in *.gif?*; mv $f $(ls $f | sed 's/gif.*/gif/')
+for file in *.jpg?*
+do
+    if [ -e "${file}" ]
+    then
+        mv "${file}" $(ls "${file}" | sed 's/jpg.*/jpg/')
+    fi
+done
+for file in *.jpeg?*
+do
+    if [ -e "${file}" ]
+    then
+        mv "${file}" $(ls "${file}" | sed 's/jpeg.*/jpeg/')
+    fi
+done
+for file in *.JPG?*
+do
+    if [ -e "${file}" ]
+    then
+        mv "${file}" $(ls "${file}" | sed 's/JPG.*/JPG/')
+    fi
+done
+for file in *.JPEG?*
+do
+    if [ -e "${file}" ]
+    then
+        mv "${file}" $(ls "${file}" | sed 's/JPEG.*/JPEG/')
+    fi
+done
+for file in *.png?*
+do
+    if [ -e "${file}" ]
+    then
+        mv "${file}" $(ls "${file}" | sed 's/png.*/png/')
+    fi
+done
+for file in *.gif?*
+do
+    if [ -e "${file}" ]
+    then
+        mv "${file}" $(ls "${file}" | sed 's/gif.*/gif/')
+    fi
+done
 
 #images
 for file in *.jpg *.jpeg *.JPG *.JPEG *.png *.gif
