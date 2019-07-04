@@ -1,12 +1,13 @@
 #!/bin/bash
+home=/home/drake
 PIHOLE=/etc/pihole
-GIT=$HOME/dotfiles/pihole
+GIT=$home/dotfiles/pihole
 ADLIST=adlists.list
 WHITELIST=whitelist.txt
 BLACKLIST=blacklist.txt
 FTL=pihole-FTL.conf
 REGEX=regex.list
-BACKUP=$HOME/pihole_backup/$(date +%F-%T)
+BACKUP=$home/pihole_backup/$(date +%F-%T)
 
 function rectify_link {
     #   - backup git repo file:
