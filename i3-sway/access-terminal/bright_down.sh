@@ -1,32 +1,24 @@
 #!/bin/bash
 #decredse brightness
-
-#brightness=$(cat /sys/class/backlight/intel_backlight/brightness)
 brightness=$(brightnessctl get)
 
-if [ "$brightness" -gt 900 ]; then
-    #set brightness = 900
-    let brightness=900
-    #brightnessctl set 900
-elif [ "$brightness" -le 900 ]; then
-    if [ "$brightness" -gt 100 ]; then
-        #if brightness <= 900, and > 100, -50
-        let brightness=$brightness-50
-        #brightnessctl set 5%-
-    elif [ "$brightness" -le 100 ]; then
+#if brightness at or below max:
+if [ "$brightness" -le 120000 ]; then
+    #if brightness >10%, decrease by 5%
+    if [ "$brightness" -gt 12000 ]; then
+        brightnessctl -q set 5%-
+    #if brighness <= 10%...
+    elif [ "$brightness" -le 12000 ]; then
+        #if brightness is 1, then set to 0
         if [ "$brightness" -eq 1 ]; then
-            let brightness=0
-            #brightnessctl set 0
-        elif [ "$brightness" -le 20 ]; then
-            let brightness=1
-            #brightnessctl set 1
+            brightnessctl -q set 0
+        #if brightness <= 1%, set to 1
+        elif [ "$brightness" -le 1200 ]; then
+            brightnessctl -q set 1
+        #otherwise, decrease by 1%
         else
-            let brightness=$brightness-20
-            #brightnessctl 2%-
+            echo "TEST"
+            brightnessctl -q set 1%-
         fi
     fi
 fi
-
-#echo "echo $brightness > /sys/class/backlight/intel_backlight/brightness" | sudo bash
-#echo "new brightness: $brightness"
-brightnessctl set "${brightness}"
