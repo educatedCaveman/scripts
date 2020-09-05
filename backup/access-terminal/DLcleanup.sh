@@ -1,12 +1,12 @@
 #!/bin/bash
 DOWNLOADS="/home/drake/Downloads/"
-PORN_VIDS="/media/mobius/pr0n/video/"
-PORN_PICS="/media/mobius/pr0n/pics/"
-ZIP="/media/mobius/pr0n/imgur_zips/"
-ARCHIVES="/media/mobius/Backup/archives/"
-ISO="/media/mobius/Backup/ISOs/"
-PFSENSE_CONFIG="/media/mobius/Backup/pfsense/"
-FREENAS_DB="/media/mobius/Backup/freenas/"
+PORN_VIDS="/mnt/mobius/pr0n/video/"
+PORN_PICS="/mnt/mobius/pr0n/pics/"
+ZIP="/mnt/mobius/pr0n/imgur_zips/"
+ARCHIVES="/mnt/mobius/Backup/archives/"
+ISO="/mnt/mobius/Backup/ISOs/"
+PFSENSE_CONFIG="/mnt/mobius/Backup/pfsense/"
+FREENAS_DB="/mnt/mobius/Backup/freenas/"
 BACKUP=$(df | grep "Backup")
 PORN=$(df | grep "pr0n")
 FREENAS_DROPBOX="/home/drake/Dropbox/freenas/"
