@@ -1,3 +1,2 @@
 #!/bin/sh
-
-cat /sys/class/hwmon/hwmon3/fan2_input
+cat /sys/class/hwmon/hwmon2/fan2_input
