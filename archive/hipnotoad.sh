@@ -2,14 +2,14 @@
 
 f=3 b=4
 for j in f b; do
-  for i in {0..7}; do
-    printf -v $j$i %b "\e[${!j}${i}m"
-  done
+    for i in {0..7}; do
+        printf -v $j$i %b "\e[${!j}${i}m"
+    done
 done
 bld=$'\e[1m'
 rst=$'\e[0m'
 
-cat << EOF
+cat <<EOF
                $bld$f3,'''.._   ,'''.
               :$f1,--.$f3 :)\,:$f1,._,.$f3:      $f2 All Glory to the $f3
               :$f1'--$f3,''   :$f1'...'$f3;\      
