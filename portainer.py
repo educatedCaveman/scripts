@@ -161,3 +161,6 @@ if args.remove != None:
     r = requests.delete(url=request_url, headers=head)
     print(r)
     print_json(r.text)
+
+#TODO: update stack
+#basically, remove then create, stopping if any error encountered
