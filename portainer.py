@@ -8,14 +8,8 @@ import json
 
 
 #global variable:
-env, host, action, branch = None, None, None, None
-port = 9000
+host, port, user, passwd, repo, branch = None, None, None, None, None, None
 endpoint_id = 1
-dev_host = 'lv-426.lab'
-prd_host = 'sevastopol.vm'
-repo = "https://github.com/educatedCaveman/docker-lab"
-prd_branch = "refs/heads/master"
-dev_branch = "refs/heads/dev_test"
 
 #helper functions
 def print_json(json_data):
@@ -43,22 +37,8 @@ def format_stacks(resp):
     print(tabulate(stack_table, stack_headers))
 
 
-def get_api_token(env):
+def get_api_token(host, port, user, passwd):
     #TODO: check for existing token, and use it. if invalid, get and store new token
-    user, passwd, host = None, None, None
-    if env == 'dev':
-        user = os.getenv('PORTAINER_DEV_USER')
-        passwd = os.getenv('PORTAINER_DEV_PASS')
-        host = 'lv-426.lab'
-    elif env == 'prd':
-        user = os.getenv('PORTAINER_DEV_USER')
-        passwd = os.getenv('PORTAINER_DEV_PASS')
-        host = 'sevastopol.vm'
-    else:
-        print('unknown environment. exiting...')
-        return None
-        
-    global token
     request_url = 'http://{host}:{port}/api/auth'.format(host=host, port=port)
     body = {
         "Username": "{}".format(user),
@@ -70,12 +50,83 @@ def get_api_token(env):
         data = json.loads(r.content)
         token = data["jwt"]
         return token
-        # print(token)
     else:
         print(r)
         print(r.text)
         print(r.content)
         return None
+
+
+def list_stacks(host, port, head):
+    request_url = 'http://{host}:{port}/api/stacks'.format(host=host, port=port)
+    r = requests.get(url = request_url, headers=head)
+    if (r.ok):
+        if args.list == 'json':
+            print_json(r.text)
+        else:
+            format_stacks(r)
+
+
+def create_stack(host, port, head, endpoint_id, repo, branch, name):
+    request_url = 'http://{host}:{port}/api/stacks?method=repository&type=2&endpointId={endpoint}'.format(
+        host=host, 
+        port=port, 
+        endpoint=endpoint_id)
+    
+    path = str(name + '/' + name + '-docker-compose.yml')
+    body = {
+        "Name": name,
+        "RepositoryURL": repo,
+        "RepositoryReferenceName": branch,
+        "ComposeFilePathInRepository": path,
+    }
+    body_json = json.dumps(body)
+    r = requests.post(url=request_url, data=body_json, headers=head)
+    print(r)
+    print(r.text)
+
+
+def remove_stack_by_id(host, port, head, stack_id, endpoint_id):
+    request_url = 'http://{host}:{port}/api/stacks/{stack_id}?endpointId={endpointId}'.format(
+        host=host, 
+        port=port,
+        stack_id=stack_id,
+        endpointId=endpoint_id)
+    r = requests.delete(url=request_url, headers=head)
+    if (r.ok):
+        print(r)
+        print('stack removed.\n')
+    else:
+        print(r)
+        print('stack not removed.\n')
+
+
+def remove_stack_by_name(host, port, head, name, endpoint_id):
+    # pass
+    #need to get stack_id by parsing the list, and passing it to remove_stack_by_id()
+
+    #get stacks:
+    request_url = 'http://{host}:{port}/api/stacks'.format(host=host, port=port)
+    r = requests.get(url = request_url, headers=head)
+
+    #search response
+    stack_id = None
+    if (r.ok):
+        json_response = json.loads(r.text)
+        for stack in json_response:
+            if stack["Name"] == name:
+                print('found stack! its id is {id}.\n'.format(id=stack["Id"]))
+                stack_id = stack["Id"]
+    else:
+        print(r)
+        print_json(r.text)
+    
+    #remove stack, if its found
+    if stack_id == None:
+        print('stack not found!\n')
+    else:
+        print('removing stack...\n')
+        remove_stack_by_id(host, port, head, stack_id, endpoint_id)
 
 
 #required options: -e, 
@@ -87,21 +138,31 @@ parser.add_argument('-e', required=True, choices=['prd', 'PRD', 'dev', 'DEV'])
 #create our action list
 action_group = parser.add_mutually_exclusive_group(required=True)
 action_group.add_argument('--list', choices=['json', 'table'])
-action_group.add_argument('--remove', type=int)
-action_group.add_argument('--create', nargs=1)
+action_group.add_argument('--remove', nargs=1)
+action_group.add_argument('--create', nargs=1, type=str)
+action_group.add_argument('--recreate', nargs=1, type=str)  #TODO
+action_group.add_argument('--restart', nargs=1, type=str)   #TODO
 
 args = parser.parse_args()
 # print(args)
 
+#set repo and port
+repo = os.getenv('PORTAINER_REPO')
+port = os.getenv('PORTAINER_PORT')
+
 if args.e in ('prd', 'PRD'):
-    host = prd_host
-    token = get_api_token('prd')
-    branch = prd_branch
+    host = os.getenv('PORTAINER_PRD_HOST')
+    user = os.getenv('PORTAINER_PRD_USER')
+    passwd = os.getenv('PORTAINER_PRD_PASS')
+    branch = os.getenv('PORTAINER_PRD_BRANCH')
+    token = get_api_token(host, port, user, passwd)
 
 if args.e in ('dev', 'DEV'):
-    host = dev_host
-    token = get_api_token('dev')
-    branch = dev_branch
+    host = os.getenv('PORTAINER_DEV_HOST')
+    user = os.getenv('PORTAINER_DEV_USER')
+    passwd = os.getenv('PORTAINER_DEV_PASS')
+    branch = os.getenv('PORTAINER_DEV_BRANCH')
+    token = get_api_token(host, port, user, passwd)
 
 if token is None:
     print('unable to retrieve token')
@@ -117,50 +178,23 @@ if branch is None:
 
 #prepare to call the API; these are the same for everything
 head = {'Authorization': 'Bearer {}'.format(token)}
-# headers = {'content-type': 'application/json'}    #TODO: this isn't needed?
 
 #determine action:
 #list stacks
 if args.list != None:
-    request_url = 'http://{host}:{port}/api/stacks'.format(host=host, port=port)
-    r = requests.get(url = request_url, headers=head)
-    if (r.ok):
-        if args.list == 'json':
-            print_json(r.text)
-        else:
-            format_stacks(r)
+    list_stacks(host, port, head)
 
 #create stack
 if args.create != None:
-    request_url = 'http://{host}:{port}/api/stacks?method=repository&type=2&endpointId={endpoint}'.format(
-        host=host, 
-        port=port, 
-        endpoint=endpoint_id)
-    
-    # print(type(args.create[0]))
-    path = str(args.create[0] + '/' + args.create[0] + '-docker-compose.yml')
-    body = {
-        "Name": args.create[0],
-        "RepositoryURL": repo,
-        "RepositoryReferenceName": branch,
-        "ComposeFilePathInRepository": path,
-    }
-    body_json = json.dumps(body)
-    r = requests.post(url=request_url, data=body_json, headers=head)
-    print(r)
-    print(r.text)
+    create_stack(host, port, head, endpoint_id, repo, branch, args.create[0])
 
 #remove stack
-#TODO: add ability to remove based on name, not just id
 if args.remove != None:
-    request_url = 'http://{host}:{port}/api/stacks/{stack_id}?endpointId={endpointId}'.format(
-        host=host, 
-        port=port,
-        stack_id=args.remove,
-        endpointId=endpoint_id)
-    r = requests.delete(url=request_url, headers=head)
-    print(r)
-    print_json(r.text)
+    try:
+        stack_id = int(args.remove[0])
+        remove_stack_by_id(host, port, head, stack_id, endpoint_id)
+    except:
+        remove_stack_by_name(host, port, head, args.remove, endpoint_id)
 
 #TODO: update stack
 #basically, remove then create, stopping if any error encountered
