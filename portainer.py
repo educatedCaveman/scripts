@@ -7,19 +7,24 @@ import argparse
 import json
 
 
+#global variable:
+env, host, action, branch = None, None, None, None
+port = 9000
+endpoint_id = 1
+dev_host = 'lv-426.lab'
+prd_host = 'sevastopol.vm'
+repo = "https://github.com/educatedCaveman/docker-lab"
+prd_branch = "refs/heads/master"
+dev_branch = "refs/heads/dev_test"
+
 #helper functions
 def print_json(json_data):
-    json_object = json.loads(json_data)
-    print(json.dumps(json_object, indent = 2)) 
+    try:
+        json_object = json.loads(json_data)
+        print(json.dumps(json_object, indent = 2)) 
+    except:
+        pass
 
-def response_ok(resp):
-    if resp.ok: 
-        print('response ok')
-        return True
-    else: 
-        print('response not ok')
-        # return False
-        sys.exit(1)
 
 def format_stacks(resp):
     #TODO: determine which columns are the most useful
@@ -38,10 +43,40 @@ def format_stacks(resp):
     print(tabulate(stack_table, stack_headers))
 
 
-#environment setting:
-env, host, token, action = None, None, None, None
-port = 9000
-endpoint_id = 1
+def get_api_token(env):
+    #TODO: check for existing token, and use it. if invalid, get and store new token
+    user, passwd, host = None, None, None
+    if env == 'dev':
+        user = os.getenv('PORTAINER_DEV_USER')
+        passwd = os.getenv('PORTAINER_DEV_PASS')
+        host = 'lv-426.lab'
+    elif env == 'prd':
+        user = os.getenv('PORTAINER_DEV_USER')
+        passwd = os.getenv('PORTAINER_DEV_PASS')
+        host = 'sevastopol.vm'
+    else:
+        print('unknown environment. exiting...')
+        return None
+        
+    global token
+    request_url = 'http://{host}:{port}/api/auth'.format(host=host, port=port)
+    body = {
+        "Username": "{}".format(user),
+        "Password": "{}".format(passwd)
+    }
+    body_json = json.dumps(body)
+    r = requests.post(url=request_url, data=body_json)
+    if r.ok:
+        data = json.loads(r.content)
+        token = data["jwt"]
+        return token
+        # print(token)
+    else:
+        print(r)
+        print(r.text)
+        print(r.content)
+        return None
+
 
 #required options: -e, 
 parser = argparse.ArgumentParser(description='perform actions on portainer.')
@@ -53,69 +88,70 @@ parser.add_argument('-e', required=True, choices=['prd', 'PRD', 'dev', 'DEV'])
 action_group = parser.add_mutually_exclusive_group(required=True)
 action_group.add_argument('--list', choices=['json', 'table'])
 action_group.add_argument('--remove', type=int)
-action_group.add_argument('--create', nargs=3)
+action_group.add_argument('--create', nargs=1)
 
 args = parser.parse_args()
-print(args)
-
-# print(args.e)
+# print(args)
 
 if args.e in ('prd', 'PRD'):
-    host = 'sevastopol.vm'
-    token = os.getenv('PORTAINER_PRD_TOKEN')
-    #TODO: set repo ref (master)
+    host = prd_host
+    token = get_api_token('prd')
+    branch = prd_branch
 
 if args.e in ('dev', 'DEV'):
-    host = 'lv-426.lab'
-    token = os.getenv('PORTAINER_DEV_TOKEN')
-    #TODO: set repo ref (dev)
+    host = dev_host
+    token = get_api_token('dev')
+    branch = dev_branch
 
 if token is None:
     print('unable to retrieve token')
     sys.exit(1)
 
+if host is None:
+    print('unable to set host')
+    sys.exit(1)
+
+if branch is None:
+    print('unable to set branch')
+    sys.exit(1)
+
 #prepare to call the API; these are the same for everything
 head = {'Authorization': 'Bearer {}'.format(token)}
-headers = {'content-type': 'application/json'}
+# headers = {'content-type': 'application/json'}    #TODO: this isn't needed?
 
 #determine action:
+#list stacks
 if args.list != None:
     request_url = 'http://{host}:{port}/api/stacks'.format(host=host, port=port)
     r = requests.get(url = request_url, headers=head)
-    if (response_ok(r)):
+    if (r.ok):
         if args.list == 'json':
             print_json(r.text)
         else:
             format_stacks(r)
 
+#create stack
 if args.create != None:
-    # #TODO: query the API
-    request_url = 'http://{host}:{port}/api/stacks?method=repository&type=1&endpointId={endpoint}'.format(
+    request_url = 'http://{host}:{port}/api/stacks?method=repository&type=2&endpointId={endpoint}'.format(
         host=host, 
         port=port, 
         endpoint=endpoint_id)
     
-    # body = {
-    #     "Name": args.name,
-    #     "RepositoryURL": args.repo,
-    #     "RepositoryReferenceName": "refs/heads/master",
-    #     "ComposeFilePathInRepository": args.path,
-    # }
+    # print(type(args.create[0]))
+    path = str(args.create[0] + '/' + args.create[0] + '-docker-compose.yml')
     body = {
-        "Name": "iperf",
-        "RepositoryURL": "https://github.com/educatedCaveman/docker-lab",
-        "RepositoryReferenceName": "refs/heads/master",
-        "ComposeFilePathInRepository": "iperf/iperf-docker-compose.yml",
+        "Name": args.create[0],
+        "RepositoryURL": repo,
+        "RepositoryReferenceName": branch,
+        "ComposeFilePathInRepository": path,
     }
-    # body_json = json.dumps(body)
-    print(request_url)
-    print(body)
-
-    r = requests.post(url=request_url, data=body, headers=head)
+    body_json = json.dumps(body)
+    r = requests.post(url=request_url, data=body_json, headers=head)
     print(r)
     print(r.text)
 
-
+#remove stack
+#TODO: add ability to remove based on name, not just id
 if args.remove != None:
     request_url = 'http://{host}:{port}/api/stacks/{stack_id}?endpointId={endpointId}'.format(
         host=host, 
@@ -124,3 +160,4 @@ if args.remove != None:
         endpointId=endpoint_id)
     r = requests.delete(url=request_url, headers=head)
     print(r)
+    print_json(r.text)
