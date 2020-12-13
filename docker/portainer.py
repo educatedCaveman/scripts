@@ -129,6 +129,35 @@ def remove_stack_by_name(host, port, head, name, endpoint_id):
         remove_stack_by_id(host, port, head, stack_id, endpoint_id)
 
 
+def restart_stack(host, port, head, name, endpoint_id):
+    request_url = 'http://{host}:{port}/api/endpoints/{endpoint_id}/docker/containers/json'.format(
+            host=host, port=port, endpoint_id=endpoint_id)
+    r = requests.get(url=request_url, headers=head)
+    if (r.ok):
+        json_object = json.loads(r.text)
+        to_restart = []
+        for i in range(0, len(json_object)):
+            #we only want the results having some labels, and whose name matches the stack
+            if len(json_object[i]["Labels"]) > 0:
+                compose_proj = json_object[i]["Labels"]["com.docker.compose.project"]
+                if compose_proj == name:
+                    container_name = json_object[i]["Names"][0][1:]     #simplify the name
+                    container_id = json_object[i]["Id"]
+                    to_restart.append(container_id)
+                    print('{name} ({proj}): {id}'.format(name=container_name, proj=compose_proj, id=container_id))
+
+        #restart the containers, if any found
+        for container_id in to_restart:
+            request_url = 'http://{host}:{port}/api/endpoints/{endpoint_id}/docker/containers/{id}/restart'.format(
+                    host=host, port=port, endpoint_id=endpoint_id, id=container_id)
+            print('attempting to restart {id}'.format(id=container_id))
+            r = requests.post(url=request_url, headers=head)
+            print(r)
+
+    else:
+        print(r)
+        print(r.text)
+
 #required options: -e, 
 parser = argparse.ArgumentParser(description='perform actions on portainer.')
 
@@ -140,7 +169,7 @@ action_group = parser.add_mutually_exclusive_group(required=True)
 action_group.add_argument('--list', choices=['json', 'table'])
 action_group.add_argument('--remove', nargs=1)
 action_group.add_argument('--create', nargs=1, type=str)
-action_group.add_argument('--recreate', nargs=1, type=str)  #TODO
+action_group.add_argument('--recreate', nargs=1, type=str)
 action_group.add_argument('--restart', nargs=1, type=str)   #TODO
 
 args = parser.parse_args()
@@ -196,5 +225,19 @@ if args.remove != None:
     except:
         remove_stack_by_name(host, port, head, args.remove, endpoint_id)
 
-#TODO: update stack
-#basically, remove then create, stopping if any error encountered
+#update stack
+if args.restart != None:
+    name = args.restart[0]
+    restart_stack(host, port, head, name, endpoint_id)
+
+#re-create (handles both initial creation, and already existing)
+if args.recreate != None:
+    #if stack already running, remove it
+    name = args.recreate[0]
+    print("need to check if the '{name}' stack already exists".format(name=name))
+
+    #this will check if the stack already exists, and delete it if it does
+    remove_stack_by_name(host, port, head, name, endpoint_id)
+
+    #if no error, create stack
+    create_stack(host, port, head, endpoint_id, repo, branch, name)
