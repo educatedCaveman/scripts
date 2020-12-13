@@ -179,6 +179,7 @@ git_dir = args.repo[0]
 cmd = ['git', '-C', git_dir, '--no-pager', 'log', '-1', '--stat']
 res = subprocess.check_output(cmd)
 output = res.decode().splitlines()
+print(output)
 
 #need to know how many files were changed:
 last_line = output[-1]
@@ -198,6 +199,8 @@ for i in range(len(output)-2, len(output)-change_count-2, -1):
     tmp = output[i].split()
     changed_files.append(tmp[0])
 
+print(changed_files)
+
 to_restart = []
 to_recreate = []
 to_delete = []
@@ -216,7 +219,9 @@ for file in changed_files:
                 stack_changes.append(tmp[0])
                 
                 #if the file exists, we need to re-create
-                if os.path.isfile(file):
+                #get absolute path:
+                full_path = git_dir + '/' + file
+                if os.path.isfile(full_path):
                     to_recreate.append(tmp[0])
                     print('re-create stack: {}'.format(tmp[0]))
                 
