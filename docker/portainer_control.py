@@ -144,17 +144,16 @@ args = parser.parse_args()
 #get environment variables:
 remote_repo = os.getenv('PORTAINER_REPO')
 port = os.getenv('PORTAINER_PORT')
+user = os.getenv('PORTAINER_USER')
 
 if args.e in ('prd', 'PRD'):
     host = os.getenv('PORTAINER_PRD_HOST')
-    user = os.getenv('PORTAINER_PRD_USER')
     passwd = os.getenv('PORTAINER_PRD_PASS')
     branch = os.getenv('PORTAINER_PRD_BRANCH')
     token = get_api_token(host, port, user, passwd)
 
 if args.e in ('dev', 'DEV'):
     host = os.getenv('PORTAINER_DEV_HOST')
-    user = os.getenv('PORTAINER_DEV_USER')
     passwd = os.getenv('PORTAINER_DEV_PASS')
     branch = os.getenv('PORTAINER_DEV_BRANCH')
     token = get_api_token(host, port, user, passwd)
