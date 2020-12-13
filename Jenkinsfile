@@ -3,6 +3,7 @@ pipeline {
 
     environment {
         ANSIBLE_REPO = '/var/lib/jenkins/workspace/Ansible_pipeline_master'
+        SCRIPTS_REPO = '/var/lib/jenkins/workspace/Scripts_pipeline_master'
     }
 
     stages {
@@ -15,11 +16,11 @@ pipeline {
             }
         }
 
-        // get environment variables
-        stage('print env') {
+        // test env vars
+        stage('test env') {
             steps {
                 // list environment variables:
-                sh 'printenv'
+                sh 'python3 ${SCRIPTS_REPO}/docker/portainer.py -e=DEV --list=table'
             }
         }
     }
