@@ -15,7 +15,6 @@ endpoint_id = 1
 #helper functions:
 def get_api_token(host, port, user, passwd):
     #TODO: check for existing token, and use it. if invalid, get and store new token
-    print('{host}, {port}, {user}, {pass}, {repo}, {branch}')
     request_url = 'http://{host}:{port}/api/auth'.format(host=host, port=port)
     body = {
         "Username": "{}".format(user),
