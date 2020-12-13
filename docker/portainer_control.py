@@ -206,31 +206,30 @@ stack_changes = []
 #next, figure out which directories contain changed files
 for file in changed_files:
     tmp = file.split('/')
+    #if the file is in the archive or scripts folders, ignore
+    if ((tmp[0] != 'scripts') and (tmp[0] != 'archive')):
     #if the file is in the root of the repo, it is ignored
-    if len(tmp) > 1:
-        #a change to a docker compose file means we need to restart the stack
-        if 'docker-compose.yaml' in tmp[-1]:
-            #if its a stack related change, register it as such
-            stack_changes.append(tmp[0])
-            
-            #if the file exists, we need to re-create
-            if os.path.isfile(file):
-                to_recreate.append(tmp[0])
-                print('re-create stack: {}'.format(tmp[0]))
-            
-            #if it doesn't, we just need to delete it
-            else:
-                to_delete.append(tmp[0])
-                print('delete stack: {}'.format(tmp[0]))
+        if len(tmp) > 1:
+            #a change to a docker compose file means we need to restart the stack
+            if 'docker-compose.yaml' in tmp[-1]:
+                #if its a stack related change, register it as such
+                stack_changes.append(tmp[0])
+                
+                #if the file exists, we need to re-create
+                if os.path.isfile(file):
+                    to_recreate.append(tmp[0])
+                    print('re-create stack: {}'.format(tmp[0]))
+                
+                #if it doesn't, we just need to delete it
+                else:
+                    to_delete.append(tmp[0])
+                    print('delete stack: {}'.format(tmp[0]))
 
-        #otherwise, just restart all the containers in the stack
-        else:
-            to_restart.append(tmp[0])
-            print('restart stack: {}'.format(tmp[0]))
+            #otherwise, just restart all the containers in the stack
+            else:
+                to_restart.append(tmp[0])
+                print('restart stack: {}'.format(tmp[0]))
     
-    #TODO: remove
-    else:
-        print('ignore stack: {}'.format(tmp[0]))
 
 for stack in to_restart:
     if stack in stack_changes:

@@ -39,8 +39,6 @@ def format_stacks(resp):
 
 def get_api_token(host, port, user, passwd):
     #TODO: check for existing token, and use it. if invalid, get and store new token
-    print('{host}, {port}, {user}, {passwd}, {repo}, {branch}'.format(
-            host=host, port=port, user=user, passwd=passwd, repo=repo, branch=branch))
     request_url = 'http://{host}:{port}/api/auth'.format(host=host, port=port)
     body = {
         "Username": "{}".format(user),
