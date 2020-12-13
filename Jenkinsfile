@@ -4,6 +4,8 @@ pipeline {
     environment {
         ANSIBLE_REPO = '/var/lib/jenkins/workspace/Ansible_pipeline_master'
         SCRIPTS_REPO = '/var/lib/jenkins/workspace/Scripts_pipeline_master'
+        PORTAINER_DEV_PASS = credentials('PORTAINER_DEV_PASS')
+        PORTAINER_PRD_PASS = credentials('PORTAINER_PRD_PASS')
     }
 
     stages {
