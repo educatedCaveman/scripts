@@ -14,6 +14,14 @@ pipeline {
                 sh 'ansible-playbook ${ANSIBLE_REPO}/deploy_scripts.yaml'
             }
         }
+
+        // get environment variables
+        stage('print env') {
+            steps {
+                // list environment variables:
+                sh 'printenv'
+            }
+        }
     }
 
 }

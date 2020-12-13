@@ -170,7 +170,7 @@ action_group.add_argument('--list', choices=['json', 'table'])
 action_group.add_argument('--remove', nargs=1)
 action_group.add_argument('--create', nargs=1, type=str)
 action_group.add_argument('--recreate', nargs=1, type=str)
-action_group.add_argument('--restart', nargs=1, type=str)   #TODO
+action_group.add_argument('--restart', nargs=1, type=str)
 
 args = parser.parse_args()
 # print(args)
