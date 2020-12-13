@@ -214,7 +214,7 @@ for file in changed_files:
     #if the file is in the root of the repo, it is ignored
         if len(tmp) > 1:
             #a change to a docker compose file means we need to restart the stack
-            if 'docker-compose.yaml' in tmp[-1]:
+            if 'docker-compose.yml' in tmp[-1]:
                 #if its a stack related change, register it as such
                 stack_changes.append(tmp[0])
                 
