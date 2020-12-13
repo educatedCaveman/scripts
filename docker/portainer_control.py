@@ -111,7 +111,6 @@ def restart_stack(host, port, head, name, endpoint_id):
     r = requests.get(url=request_url, headers=head)
     if (r.ok):
         json_object = json.loads(r.text)
-        print(json_object)
         to_restart = []
         for i in range(0, len(json_object)):
             #we only want the results having some labels, and whose name matches the stack
@@ -260,7 +259,7 @@ for stack in to_recreate:
     #if no error, create stack
     create_stack(host, port, head, endpoint_id, remote_repo, branch, stack)
 
-#TODO: test this
+#restart
 for stack in to_restart:
     #run the command to restart the stack
     restart_stack(host, port, head, stack, endpoint_id)
