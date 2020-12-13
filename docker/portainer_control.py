@@ -45,6 +45,7 @@ def remove_stack_by_name(host, port, head, name, endpoint_id):
     stack_id = None
     if (r.ok):
         json_response = json.loads(r.text)
+        print(json_response)
         for stack in json_response:
             if stack["Name"] == name:
                 print('found stack! its id is {id}.\n'.format(id=stack["Id"]))
@@ -90,6 +91,7 @@ def create_stack(host, port, head, endpoint_id, repo, branch, name):
         "ComposeFilePathInRepository": path,
     }
     body_json = json.dumps(body)
+    print(body_json)
     r = requests.post(url=request_url, data=body_json, headers=head)
     print(r)
     print(r.text)
@@ -109,6 +111,7 @@ def restart_stack(host, port, head, name, endpoint_id):
     r = requests.get(url=request_url, headers=head)
     if (r.ok):
         json_object = json.loads(r.text)
+        print(json_object)
         to_restart = []
         for i in range(0, len(json_object)):
             #we only want the results having some labels, and whose name matches the stack
@@ -247,7 +250,7 @@ for stack in to_delete:
     #run the command to delete the stack
     remove_stack_by_name(host, port, head, stack, endpoint_id)
 
-#TODO: test this:
+#recreate
 for stack in to_recreate:
     #run the command to re-create the stack
 
