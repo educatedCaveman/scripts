@@ -240,16 +240,11 @@ for stack in to_restart:
 #TODO: test this
 for stack in to_delete:
     #run the command to delete the stack
-    # pass
     remove_stack_by_name(host, port, head, stack, endpoint_id)
 
 #TODO: test this:
 for stack in to_recreate:
     #run the command to re-create the stack
-    # pass
-    #if stack already running, remove it
-    # name = args.recreate[0]
-    print("need to check if the '{name}' stack already exists".format(name=stack))
 
     #this will check if the stack already exists, and delete it if it does
     remove_stack_by_name(host, port, head, stack, endpoint_id)
@@ -260,6 +255,4 @@ for stack in to_recreate:
 #TODO: test this
 for stack in to_restart:
     #run the command to restart the stack
-    # pass
-    name = args.restart[0]
     restart_stack(host, port, head, stack, endpoint_id)
