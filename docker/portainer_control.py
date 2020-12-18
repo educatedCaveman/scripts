@@ -178,11 +178,11 @@ head = {'Authorization': 'Bearer {}'.format(token)}
 
 #determine most recent change to git repo
 git_dir = args.repo[0]
+#TODO: can use only the cmd_PRD?
 #get only the last commit
 cmd_dev = ['git', '-C', git_dir, '--no-pager', 'log', '-1', '--stat']
-#get the latest commit, and filter out everything but the files
+#get the latest merge, and filter out everything but the files
 cmd_prd = ['git', '-C', git_dir, '--no-pager', 'log', '-m', '-1', '--name-only']
-
 
 #choose between the commands
 if args.env == 'PRD':
@@ -195,7 +195,9 @@ output = res.decode().splitlines()
 print(output)
 changed_files = []
 
+#PRD
 if args.env == 'PRD':
+    #the assumption is all files we potentially want to take action on will have at least 1 / in them
     for line in output:
         if '/' in line:
             tmp = line.strip()
