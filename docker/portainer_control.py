@@ -198,7 +198,7 @@ changed_files = []
 if args.env == 'PRD':
     for line in output:
         if '/' in line:
-            tmp = line.trim()
+            tmp = line.strip()
             changed_files.append(tmp)
 
 #DEV
