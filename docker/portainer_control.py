@@ -178,28 +178,47 @@ head = {'Authorization': 'Bearer {}'.format(token)}
 
 #determine most recent change to git repo
 git_dir = args.repo[0]
-cmd = ['git', '-C', git_dir, '--no-pager', 'log', '-1', '--stat']
+#get only the last commit
+cmd_dev = ['git', '-C', git_dir, '--no-pager', 'log', '-1', '--stat']
+#get the latest commit, and filter out everything but the files
+cmd_prd_git = ['git', '-C', git_dir, '--no-pager', 'log', '-m', '-1', '--name-only']
+
+
+#choose between the commands
+if args.env == 'PRD':
+    cmd = cmd_prd
+else:
+    cmd = cmd_dev
+
 res = subprocess.check_output(cmd)
 output = res.decode().splitlines()
 print(output)
-
-#need to know how many files were changed:
-last_line = output[-1]
-last_words = last_line.split()
-
-change_count = None
-try:
-    change_count = int(last_words[0])
-except:
-    print('error parsing git output')
-    sys.exit(1)
-
 changed_files = []
-#using that number, get that number of lines before the last line
-#then split those lines getting the files
-for i in range(len(output)-2, len(output)-change_count-2, -1):
-    tmp = output[i].split()
-    changed_files.append(tmp[0])
+
+if args.env == 'PRD':
+    for line in output:
+        if '/' in line:
+            tmp = line.trim()
+            changed_files.append(tmp)
+
+#DEV
+else:
+    #need to know how many files were changed:
+    last_line = output[-1]
+    last_words = last_line.split()
+
+    change_count = None
+    try:
+        change_count = int(last_words[0])
+    except:
+        print('error parsing git output')
+        sys.exit(1)
+
+    #using that number, get that number of lines before the last line
+    #then split those lines getting the files
+    for i in range(len(output)-2, len(output)-change_count-2, -1):
+        tmp = output[i].split()
+        changed_files.append(tmp[0])
 
 print(changed_files)
 
