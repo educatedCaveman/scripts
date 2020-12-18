@@ -181,7 +181,7 @@ git_dir = args.repo[0]
 #get only the last commit
 cmd_dev = ['git', '-C', git_dir, '--no-pager', 'log', '-1', '--stat']
 #get the latest commit, and filter out everything but the files
-cmd_prd_git = ['git', '-C', git_dir, '--no-pager', 'log', '-m', '-1', '--name-only']
+cmd_prd = ['git', '-C', git_dir, '--no-pager', 'log', '-m', '-1', '--name-only']
 
 
 #choose between the commands
