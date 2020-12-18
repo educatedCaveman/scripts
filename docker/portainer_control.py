@@ -244,7 +244,12 @@ for stack in to_restart:
         to_restart.remove(stack)
         print('dont restart stack: {}'.format(stack))
 
-#TODO: test this
+#if the env is PRD, all stacks get re-created:
+if args.env == 'PRD':
+    for stack in to_restart:
+        to_recreate.append(stack)
+
+#delete stack
 for stack in to_delete:
     #run the command to delete the stack
     remove_stack_by_name(host, port, head, stack, endpoint_id)
