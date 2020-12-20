@@ -2,4 +2,4 @@
 
 #backup pihole config
 cd /mnt/mobius/Backup/pihole
-pihole -a -t
+/usr/local/bin/pihole -a -t
