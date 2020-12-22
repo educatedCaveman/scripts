@@ -28,27 +28,27 @@ fi
 
 #sync directories:
 #pictures
-/usr/bin/rsync -au /home/drake/Pictures/ /media/mobius/Pictures/ &
-/usr/bin/rsync -au /media/storage/Pictures/temp/ /media/mobius/pr0n/pics/ --exclude=/imgur_zips/ &
-/usr/bin/rsync -au /media/storage/Pictures/ /media/mobius/Pictures/ --exclude=/temp/ &
-/usr/bin/rsync -au /home/drake/Screenshots/ /media/mobius/Pictures/Screenshots/ &
+/usr/bin/rsync -au /home/drake/Pictures/ /mnt/mobius/Pictures/ &
+/usr/bin/rsync -au /media/storage/Pictures/temp/ /mnt/mobius/pr0n/pics/ --exclude=/imgur_zips/ &
+/usr/bin/rsync -au /media/storage/Pictures/ /mnt/mobius/Pictures/ --exclude=/temp/ &
+/usr/bin/rsync -au /home/drake/Screenshots/ /mnt/mobius/Pictures/Screenshots/ &
 
 #video
-/usr/bin/rsync -au /media/storage/Videos/ /media/mobius/pr0n/video/ &
+/usr/bin/rsync -au /media/storage/Videos/ /mnt/mobius/pr0n/video/ &
 
 #zips
-/usr/bin/rsync -au /media/storage/Pictures/picArchives/ /media/mobius/pr0n/imgur_zips/ &
-/usr/bin/rsync -au /media/storage/Pictures/temp/imgur_zips/ /media/mobius/pr0n/imgur_zips/ &
+/usr/bin/rsync -au /media/storage/Pictures/picArchives/ /mnt/mobius/pr0n/imgur_zips/ &
+/usr/bin/rsync -au /media/storage/Pictures/temp/imgur_zips/ /mnt/mobius/pr0n/imgur_zips/ &
 
 #archives
-/usr/bin/rsync -au /home/drake/archives/ /media/mobius/Backup/archives/ &
+/usr/bin/rsync -au /home/drake/archives/ /mnt/mobius/Backup/archives/ &
 
 #ISOs
-/usr/bin/rsync -au /media/storage/ISOs/ /media/mobius/Backup/ISOs/ &
+/usr/bin/rsync -au /media/storage/ISOs/ /mnt/mobius/Backup/ISOs/ &
 
 #Documents
-/usr/bin/rsync -au /home/drake/Documents/ /media/mobius/Documents/ &
+/usr/bin/rsync -au /home/drake/Documents/ /mnt/mobius/Documents/ &
 
 #freenas .db:
-/usr/bin/rsync -au /home/drake/Downloads/*.db /media/mobius/Backup/freenas/ &
+/usr/bin/rsync -au /home/drake/Downloads/*.db /mnt/mobius/Backup/freenas/ &
 /usr/bin/rsync -au /home/drake/Downloads/*.db /home/drake/Dropbox/freenas/ &
