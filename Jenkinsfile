@@ -10,7 +10,7 @@ pipeline {
             steps {
                 // run ansible playbook to get them available in drake's home directory
                 echo "deploying scripts to drake's home directory"
-                sh 'ansible-playbook ${ANSIBLE_REPO}/deploy_scripts.yml'
+                sh 'ansible-playbook ${ANSIBLE_REPO}/deploy/deploy_scripts.yml'
             }
         }
     }
