@@ -98,8 +98,8 @@ def remove_stack_by_id(host, port, head, stack_id, endpoint_id):
         print('stack not removed.\n')
 
 
-def create_stack(host, port, head, endpoint_id, repo, branch, name):
-    request_url = 'http://{host}:{port}/api/stacks?method=repository&type=2&endpointId={endpoint}'.format(
+def create_stack(host, port, head, endpoint_id, repo, branch, name, swarm_ID):
+    request_url = 'http://{host}:{port}/api/stacks?method=repository&type=1&endpointId={endpoint}'.format(
         host=host, 
         port=port, 
         endpoint=endpoint_id)
@@ -110,6 +110,7 @@ def create_stack(host, port, head, endpoint_id, repo, branch, name):
         "RepositoryURL": repo,
         "RepositoryReferenceName": branch,
         "ComposeFilePathInRepository": path,
+        "SwarmID": swarm_ID,
     }
     body_json = json.dumps(body)
     print(body_json)
@@ -130,6 +131,7 @@ def restart_stack(host, port, head, name, endpoint_id):
     request_url = 'http://{host}:{port}/api/endpoints/{endpoint_id}/docker/containers/json'.format(
             host=host, port=port, endpoint_id=endpoint_id)
     r = requests.get(url=request_url, headers=head)
+    print_json(r)
     if (r.ok):
         json_object = json.loads(r.text)
         to_restart = []
@@ -305,7 +307,7 @@ for stack in to_recreate:
     remove_stack_by_name(host, port, head, stack, endpoint_id)
 
     #if no error, create stack
-    create_stack(host, port, head, endpoint_id, remote_repo, branch, stack)
+    create_stack(host, port, head, endpoint_id, remote_repo, branch, stack, swarm_ID)
 
 #restart
 for stack in to_restart:
