@@ -1,0 +1,18 @@
+looking to perform
+    - scrubs
+        - weekly? monthly?
+    - snapshots
+        - daily for a week
+        - weekly for a month
+        - monthly for 6 months or a year
+    - SMART tests
+        - same schedule as truenas:
+            - long once a month, staggered
+            - short weekly, all at once
+    - notifications
+        - email is easy
+        - slack would be better
+
+https://www.youtube.com/watch?v=Pk-buoMI5ug
+https://github.com/Corsinvest/cv4pve-autosnap
+https://pastebin.com/v0twkMhc
