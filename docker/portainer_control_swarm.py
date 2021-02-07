@@ -66,7 +66,7 @@ def remove_stack_by_name(host, port, head, name, endpoint_id):
     stack_id = None
     if (r.ok):
         json_response = json.loads(r.text)
-        print_json(r.text)
+        # print_json(r.text)
         for stack in json_response:
             if stack["Name"] == name:
                 print('found stack! its id is {id}.\n'.format(id=stack["Id"]))
