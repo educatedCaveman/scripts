@@ -134,6 +134,7 @@ def restart_stack(host, port, head, name, endpoint_id):
     print_json(r)
     if (r.ok):
         json_object = json.loads(r.text)
+        print(json_object)
         to_restart = []
         for i in range(0, len(json_object)):
             #we only want the results having some labels, and whose name matches the stack
