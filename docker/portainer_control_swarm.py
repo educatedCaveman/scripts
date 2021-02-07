@@ -131,6 +131,7 @@ parser = argparse.ArgumentParser(description='perform actions on portainer.')
 #get the environment, and the repo path:
 parser.add_argument('--env', required=True, choices=['PRD', 'DEV'])
 parser.add_argument('--repo', required=True, nargs=1, type=str)
+parser.add_argument('--action', required=True, choices=['UP', 'DOWN', 'DOWNUP'])
 #parse the arguments
 args = parser.parse_args()
 
@@ -206,17 +207,49 @@ for file in changed_files:
                 to_delete.append(tmp[0])
                 print('delete stack: {}'.format(tmp[0]))
 
-#delete stack
-for stack in to_delete:
-    #run the command to delete the stack
-    remove_stack_by_name(host, port, head, stack, endpoint_id)
+# bring stacks down:
+if args.action == 'DOWN':
+    #delete stack
+    for stack in to_delete:
+        #run the command to delete the stack
+        remove_stack_by_name(host, port, head, stack, endpoint_id)
 
-#recreate
-for stack in to_recreate:
-    #run the command to re-create the stack
+# bring stacks up:
+if args.action == 'UP':
+    #recreate
+    for stack in to_recreate:
+        #run the command to re-create the stack
+        create_stack(host, port, head, endpoint_id, remote_repo, branch, stack, swarm_ID)
 
-    #this will check if the stack already exists, and delete it if it does
-    remove_stack_by_name(host, port, head, stack, endpoint_id)
+# bring stacks down, then immediately back up
+if args.action == 'DOWNUP':
+    #delete stacks just in case
+    for stack in to_delete:
+        #run the command to delete the stack
+        remove_stack_by_name(host, port, head, stack, endpoint_id)
 
-    #if no error, create stack
-    create_stack(host, port, head, endpoint_id, remote_repo, branch, stack, swarm_ID)
+    #recreate
+    for stack in to_recreate:
+        #run the command to re-create the stack
+
+        #this will check if the stack already exists, and delete it if it does
+        remove_stack_by_name(host, port, head, stack, endpoint_id)
+
+        #if no error, create stack
+        create_stack(host, port, head, endpoint_id, remote_repo, branch, stack, swarm_ID)
+
+
+# #delete stack
+# for stack in to_delete:
+#     #run the command to delete the stack
+#     remove_stack_by_name(host, port, head, stack, endpoint_id)
+
+# #recreate
+# for stack in to_recreate:
+#     #run the command to re-create the stack
+
+#     #this will check if the stack already exists, and delete it if it does
+#     remove_stack_by_name(host, port, head, stack, endpoint_id)
+
+#     #if no error, create stack
+#     create_stack(host, port, head, endpoint_id, remote_repo, branch, stack, swarm_ID)
