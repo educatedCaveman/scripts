@@ -127,37 +127,37 @@ def print_json(json_data):
         pass
 
 
-def restart_stack(host, port, head, name, endpoint_id):
-    request_url = 'http://{host}:{port}/api/endpoints/{endpoint_id}/docker/containers/json'.format(
-            host=host, port=port, endpoint_id=endpoint_id)
-    r = requests.get(url=request_url, headers=head)
-    print_json(r)
-    if (r.ok):
-        json_object = json.loads(r.text)
-        print(json_object)
-        to_restart = []
-        for i in range(0, len(json_object)):
-            #we only want the results having some labels, and whose name matches the stack
-            if len(json_object[i]["Labels"]) > 0:
-                print(json_object[i]["Labels"])
-                compose_proj = json_object[i]["Labels"]["com.docker.stack.namespace"]
-                if compose_proj == name:
-                    container_name = json_object[i]["Names"][0][1:]     #simplify the name
-                    container_id = json_object[i]["Id"]
-                    to_restart.append(container_id)
-                    print('{name} ({proj}): {id}'.format(name=container_name, proj=compose_proj, id=container_id))
+# def restart_stack(host, port, head, name, endpoint_id):
+#     request_url = 'http://{host}:{port}/api/endpoints/{endpoint_id}/docker/containers/json'.format(
+#             host=host, port=port, endpoint_id=endpoint_id)
+#     r = requests.get(url=request_url, headers=head)
+#     print_json(r)
+#     if (r.ok):
+#         json_object = json.loads(r.text)
+#         print(json_object)
+#         to_restart = []
+#         for i in range(0, len(json_object)):
+#             #we only want the results having some labels, and whose name matches the stack
+#             if len(json_object[i]["Labels"]) > 0:
+#                 print(json_object[i]["Labels"])
+#                 compose_proj = json_object[i]["Labels"]["com.docker.stack.namespace"]
+#                 if compose_proj == name:
+#                     container_name = json_object[i]["Names"][0][1:]     #simplify the name
+#                     container_id = json_object[i]["Id"]
+#                     to_restart.append(container_id)
+#                     print('{name} ({proj}): {id}'.format(name=container_name, proj=compose_proj, id=container_id))
 
-        #restart the containers, if any found
-        for container_id in to_restart:
-            request_url = 'http://{host}:{port}/api/endpoints/{endpoint_id}/docker/containers/{id}/restart'.format(
-                    host=host, port=port, endpoint_id=endpoint_id, id=container_id)
-            print('attempting to restart {id}'.format(id=container_id))
-            r = requests.post(url=request_url, headers=head)
-            print(r)
+#         #restart the containers, if any found
+#         for container_id in to_restart:
+#             request_url = 'http://{host}:{port}/api/endpoints/{endpoint_id}/docker/containers/{id}/restart'.format(
+#                     host=host, port=port, endpoint_id=endpoint_id, id=container_id)
+#             print('attempting to restart {id}'.format(id=container_id))
+#             r = requests.post(url=request_url, headers=head)
+#             print(r)
 
-    else:
-        print(r)
-        print(r.text)
+#     else:
+#         print(r)
+#         print(r.text)
 
 
 #argument parsing:
@@ -204,56 +204,62 @@ swarm_ID = get_swarm_id(host, port, head)
 
 #determine most recent change to git repo
 git_dir = args.repo[0]
-#TODO: can use only the cmd_PRD?
+# TODO: can use only the cmd_PRD?
 #get only the last commit
-cmd_dev = ['git', '-C', git_dir, '--no-pager', 'log', '-1', '--stat']
+# cmd_dev = ['git', '-C', git_dir, '--no-pager', 'log', '-1', '--stat']
 #get the latest merge, and filter out everything but the files
 cmd_prd = ['git', '-C', git_dir, '--no-pager', 'log', '-m', '-1', '--name-only']
 
+cmd = cmd_prd
 #choose between the commands
-if args.env == 'PRD':
-    cmd = cmd_prd
-else:
-    cmd = cmd_dev
+# if args.env == 'PRD':
+#     cmd = cmd_prd
+# else:
+#     cmd = cmd_dev
 
 res = subprocess.check_output(cmd)
 output = res.decode().splitlines()
 print(output)
 changed_files = []
 
-#PRD
-if args.env == 'PRD':
-    #the assumption is all files we potentially want to take action on will have at least 1 / in them
-    for line in output:
-        if '/' in line:
-            tmp = line.strip()
-            changed_files.append(tmp)
+# #PRD
+# if args.env == 'PRD':
+#     #the assumption is all files we potentially want to take action on will have at least 1 / in them
+#     for line in output:
+#         if '/' in line:
+#             tmp = line.strip()
+#             changed_files.append(tmp)
 
-#DEV
-else:
-    #need to know how many files were changed:
-    last_line = output[-1]
-    last_words = last_line.split()
+for line in output:
+    if '/' in line:
+        tmp = line.strip()
+        changed_files.append(tmp)
 
-    change_count = None
-    try:
-        change_count = int(last_words[0])
-    except:
-        print('error parsing git output')
-        sys.exit(1)
+# #DEV
+# else:
+#     #need to know how many files were changed:
+#     last_line = output[-1]
+#     last_words = last_line.split()
 
-    #using that number, get that number of lines before the last line
-    #then split those lines getting the files
-    for i in range(len(output)-2, len(output)-change_count-2, -1):
-        tmp = output[i].split()
-        changed_files.append(tmp[0])
+#     change_count = None
+#     try:
+#         change_count = int(last_words[0])
+#     except:
+#         print('error parsing git output')
+#         sys.exit(1)
+
+#     #using that number, get that number of lines before the last line
+#     #then split those lines getting the files
+#     for i in range(len(output)-2, len(output)-change_count-2, -1):
+#         tmp = output[i].split()
+#         changed_files.append(tmp[0])
 
 print(changed_files)
 
-to_restart = []
+# to_restart = []
 to_recreate = []
 to_delete = []
-stack_changes = []
+# stack_changes = []
 
 #next, figure out which directories contain changed files
 for file in changed_files:
@@ -262,43 +268,54 @@ for file in changed_files:
     if ((tmp[0] != 'scripts') and (tmp[0] != 'archive')):
     #if the file is in the root of the repo, it is ignored
         if len(tmp) > 1:
-            #a change to a docker compose file means we need to restart the stack
-            if 'docker-compose.yml' in tmp[-1]:
-                #if its a stack related change, register it as such
-                stack_changes.append(tmp[0])
+            # #a change to a docker compose file means we need to restart the stack
+            # if 'docker-compose.yml' in tmp[-1]:
+            #     #if its a stack related change, register it as such
+            #     stack_changes.append(tmp[0])
                 
-                #if the file exists, we need to re-create
-                #get absolute path:
-                full_path = git_dir + '/' + file
-                if os.path.isfile(full_path):
-                    to_recreate.append(tmp[0])
-                    print('re-create stack: {}'.format(tmp[0]))
+            #     #if the file exists, we need to re-create
+            #     #get absolute path:
+            #     full_path = git_dir + '/' + file
+            #     if os.path.isfile(full_path):
+            #         to_recreate.append(tmp[0])
+            #         print('re-create stack: {}'.format(tmp[0]))
                 
-                #if it doesn't, we just need to delete it
-                else:
-                    to_delete.append(tmp[0])
-                    print('delete stack: {}'.format(tmp[0]))
+            #     #if it doesn't, we just need to delete it
+            #     else:
+            #         to_delete.append(tmp[0])
+            #         print('delete stack: {}'.format(tmp[0]))
 
-            #otherwise, just restart all the containers in the stack
+            # #otherwise, just restart all the containers in the stack
+            # else:
+            #     to_restart.append(tmp[0])
+            #     print('restart stack: {}'.format(tmp[0]))
+
+            # if the file exists, we need to re-create
+            #get absolute path:
+            full_path = git_dir + '/' + file
+            if os.path.isfile(full_path):
+                to_recreate.append(tmp[0])
+                print('re-create stack: {}'.format(tmp[0]))
+            
+            #if it doesn't, we just need to delete it
             else:
-                to_restart.append(tmp[0])
-                print('restart stack: {}'.format(tmp[0]))
-    
+                to_delete.append(tmp[0])
+                print('delete stack: {}'.format(tmp[0]))
 
-for stack in to_restart:
-    if stack in stack_changes:
-        #if the stack is in the reastart and re-create lists, only need to re-create
-        to_restart.remove(stack)
-        print('dont restart stack: {}'.format(stack))
+# for stack in to_restart:
+#     if stack in stack_changes:
+#         #if the stack is in the reastart and re-create lists, only need to re-create
+#         to_restart.remove(stack)
+#         print('dont restart stack: {}'.format(stack))
 
 #if the env is PRD, all stacks get re-created:
-if args.env == 'PRD':
-    for stack in to_restart:
-        to_recreate.append(stack)
+# if args.env == 'PRD':
+#     for stack in to_restart:
+#         to_recreate.append(stack)
 
-if args.env == 'DEV':
-    for stack in to_restart:
-        to_recreate.append(stack)
+# if args.env == 'DEV':
+#     for stack in to_restart:
+#         to_recreate.append(stack)
 
 #delete stack
 for stack in to_delete:
@@ -315,7 +332,7 @@ for stack in to_recreate:
     #if no error, create stack
     create_stack(host, port, head, endpoint_id, remote_repo, branch, stack, swarm_ID)
 
-#restart
-for stack in to_restart:
-    #run the command to restart the stack
-    restart_stack(host, port, head, stack, endpoint_id)
+# #restart
+# for stack in to_restart:
+#     #run the command to restart the stack
+#     restart_stack(host, port, head, stack, endpoint_id)
