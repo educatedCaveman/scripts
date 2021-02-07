@@ -140,7 +140,7 @@ def restart_stack(host, port, head, name, endpoint_id):
             #we only want the results having some labels, and whose name matches the stack
             if len(json_object[i]["Labels"]) > 0:
                 print(json_object[i]["Labels"])
-                compose_proj = json_object[i]["Labels"]["com.docker.compose.project"]
+                compose_proj = json_object[i]["Labels"]["com.docker.stack.namespace"]
                 if compose_proj == name:
                     container_name = json_object[i]["Names"][0][1:]     #simplify the name
                     container_id = json_object[i]["Id"]
