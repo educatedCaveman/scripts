@@ -21,7 +21,7 @@ def get_api_token(host, port, user, passwd):
         "Password": "{}".format(passwd)
     }
     print(request_url)
-    print(body)
+    print_json(body)
     body_json = json.dumps(body)
     r = requests.post(url=request_url, data=body_json)
     if r.ok:
@@ -45,7 +45,7 @@ def get_swarm_id(host, port, head):
     if r.ok:
         data = json.loads(r.content)
         swarm_ID = data["ID"]
-        print(swarm_ID)
+        # print(swarm_ID)
         return swarm_ID
     else:
         print(r)
@@ -66,7 +66,7 @@ def remove_stack_by_name(host, port, head, name, endpoint_id):
     stack_id = None
     if (r.ok):
         json_response = json.loads(r.text)
-        print_json(json_response)
+        print_json(r.text)
         for stack in json_response:
             if stack["Name"] == name:
                 print('found stack! its id is {id}.\n'.format(id=stack["Id"]))
@@ -244,18 +244,3 @@ if args.action == 'DOWNUP':
         #if no error, create stack
         create_stack(host, port, head, endpoint_id, remote_repo, branch, stack, swarm_ID)
 
-
-# #delete stack
-# for stack in to_delete:
-#     #run the command to delete the stack
-#     remove_stack_by_name(host, port, head, stack, endpoint_id)
-
-# #recreate
-# for stack in to_recreate:
-#     #run the command to re-create the stack
-
-#     #this will check if the stack already exists, and delete it if it does
-#     remove_stack_by_name(host, port, head, stack, endpoint_id)
-
-#     #if no error, create stack
-#     create_stack(host, port, head, endpoint_id, remote_repo, branch, stack, swarm_ID)
