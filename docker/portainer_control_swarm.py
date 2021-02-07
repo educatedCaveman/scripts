@@ -296,6 +296,10 @@ if args.env == 'PRD':
     for stack in to_restart:
         to_recreate.append(stack)
 
+if args.env == 'DEV':
+    for stack in to_restart:
+        to_recreate.append(stack)
+
 #delete stack
 for stack in to_delete:
     #run the command to delete the stack
