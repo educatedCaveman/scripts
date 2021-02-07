@@ -209,9 +209,15 @@ for file in changed_files:
 
 # bring stacks down:
 if args.action == 'DOWN':
-    #delete stack
+    #delete stacks that dont need to be re-created
     for stack in to_delete:
         #run the command to delete the stack
+        remove_stack_by_name(host, port, head, stack, endpoint_id)
+
+    #and delete stacks that need to be re-created.
+    for stack in to_recreate:
+        #run the command to re-create the stack
+        #this will check if the stack already exists, and delete it if it does
         remove_stack_by_name(host, port, head, stack, endpoint_id)
 
 # bring stacks up:
