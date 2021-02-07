@@ -66,7 +66,7 @@ def remove_stack_by_name(host, port, head, name, endpoint_id):
     stack_id = None
     if (r.ok):
         json_response = json.loads(r.text)
-        print(json_response)
+        print_json(json_response)
         for stack in json_response:
             if stack["Name"] == name:
                 print('found stack! its id is {id}.\n'.format(id=stack["Id"]))
@@ -113,10 +113,10 @@ def create_stack(host, port, head, endpoint_id, repo, branch, name, swarm_ID):
         "SwarmID": swarm_ID,
     }
     body_json = json.dumps(body)
-    print(body_json)
+    print_json(body_json)
     r = requests.post(url=request_url, data=body_json, headers=head)
     print(r)
-    print(r.text)
+    print_json(r.text)
 
 
 def print_json(json_data):
