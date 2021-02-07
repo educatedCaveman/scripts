@@ -21,7 +21,7 @@ def get_api_token(host, port, user, passwd):
         "Password": "{}".format(passwd)
     }
     print(request_url)
-    print_json(body)
+    # print_json(body)
     body_json = json.dumps(body)
     r = requests.post(url=request_url, data=body_json)
     if r.ok:
