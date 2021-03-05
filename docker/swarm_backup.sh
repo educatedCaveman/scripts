@@ -35,5 +35,12 @@ else
     exit 1
 fi
 
-# run the backup
-rsync -az --delete "${SRC}" "${DEST}"
+#check for empty source; if empty, do nothing
+if find "${SRC}" -mindepth 1 | read
+then
+    echo "backup source empty. skipping backup"
+else
+    echo "backing up..."
+    # run the backup
+    rsync -az --delete "${SRC}" "${DEST}"
+fi
