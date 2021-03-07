@@ -36,7 +36,7 @@ else
 fi
 
 #check for empty source; if empty, do nothing
-if find "${SRC}" -mindepth 1 | read
+if [ "$(find ${SRC} -mindepth 1 | read)" ]
 then
     echo "backup source empty. skipping backup"
 else
