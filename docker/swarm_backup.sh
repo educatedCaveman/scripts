@@ -12,22 +12,22 @@ then
 fi
 
 # check first arg
-if [ $1 -eq "DEV" ]
+if [ "$1" == "DEV" ]
 then
-    ENV=$1
-elif [ $1 -eq "PRD" ]
+    ENV="$1"
+elif [ "$1" == "PRD" ]
 then
-    ENV=$1
+    ENV="$1"
 else
     echo "illegal argument #1. must be in ('PRD', 'DEV')."
     exit 1
 fi
 
 # check second arg
-if [ $1 -eq "manager" ]
+if [ "$2" == "manager" ]
 then
     DEST="/mnt/mobius/Backup/docker/portainer/${ENV}/"
-elif [ $1 -eq "worker" ]
+elif [ "$2" == "worker" ]
 then
     DEST="/mnt/mobius/Backup/docker/data/${ENV}/"
 else
@@ -42,5 +42,5 @@ then
 else
     echo "backing up..."
     # run the backup
-    rsync -az --delete "${SRC}" "${DEST}"
+    /usr/bin/rsync -az --delete "${SRC}" "${DEST}"
 fi
