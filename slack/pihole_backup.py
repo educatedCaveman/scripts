@@ -10,7 +10,7 @@ from slack_webhook import Slack
 path = '/mnt/mobius/Backup/pihole'
 d = datetime.today()
 d_str = d.strftime("%F")
-pi_file = 'pi-hole-teleporter_{}_*.tar.gz'.format(d_str)
+pi_file = 'pi-hole-singularity-teleporter_{}_*.tar.gz'.format(d_str)
 #TODO: get pihole specific webhook
 webhook = os.getenv('SLACK_WEBHOOK_PIHOLE')
 def nfs_not_mounted():
