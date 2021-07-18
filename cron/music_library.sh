@@ -34,17 +34,20 @@ rsync -az "${LIBRARY}" "${MOBILE}" --exclude="*.flac" --delete
 
 # determine .flac files requiring conversion
 # library files
-find "${LIBRARY}" -type f -name "*.flac" > "${LIB_TMP}"
+# find "${LIBRARY}" -type f -name "*.flac" > "${LIB_TMP}"
+find "${LIBRARY}" -type f -name "*.flac" | sort > "${LIB_TMP}"
 sed -i 's/\.flac$//' "${LIB_TMP}"       # remove .flac extension
 sed -i "s,${LIBRARY},," "${LIB_TMP}"    # remove leading path, and use different delimiter
 
 # mobile files
-find "${MOBILE}" -type f > "${MOB_TMP}" 
+# find "${MOBILE}" -type f > "${MOB_TMP}" 
+find "${MOBILE}" -type f | sort > "${MOB_TMP}" 
 sed -i 's/\..\{3\}$//' "${MOB_TMP}"     # remove any 3-letter extension
 sed -i "s,${MOBILE},," "${MOB_TMP}"     # remove leading path, and use different delimiter
 
 # compare the files, only keeping the files in library that aren't in mobile
-comm -23 <(sort "${LIB_TMP}") <(sort "${MOB_TMP}") > "${TO_CONVERT}"
+# comm -23 <(sort "${LIB_TMP}") <(sort "${MOB_TMP}") > "${TO_CONVERT}"
+comm -23 "${LIB_TMP}" "${MOB_TMP}" > "${TO_CONVERT}"
 
 # convert the files
 parallel -a "${TO_CONVERT}" ffmpeg -nostdin -loglevel quiet -i "${LIBRARY}{}.flac" -c:a libvorbis -q:a 8 "${MOBILE}{}.ogg"
