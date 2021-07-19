@@ -37,14 +37,16 @@ do
 done
 
 # sync non-flac files to mobile library, and handle deleted files
-rsync -az "${LIBRARY}/" "${MOBILE}/" --exclude="*.flac" --delete
+# rsync -az "${LIBRARY}/" "${MOBILE}/" --exclude="*.flac" --delete
+rsync -az "${LIBRARY}/" "${MOBILE}/" --exclude="*.flac"
 
 # determine .flac files requiring conversion
-# flac files
+# get all flac files and remove the extension and the leading path
 find "${LIBRARY}/" -type f -name "*.flac" | sort > "${FLACS}"
-sed -i 's/\.flac$//' "${FLACS}"       # remove .flac extension
-sed -i "s,${LIBRARY}/,," "${FLACS}"    # remove leading path, and use different delimiter
+sed -i 's/\.flac$//' "${FLACS}"
+sed -i "s,${LIBRARY}/,," "${FLACS}"
 
+# which of the files don't already exist?
 while read LINE
 do
     FLAC_FILE="${LIBRARY}/${LINE}.flac"
@@ -59,6 +61,9 @@ done < "${FLACS}"
 
 # convert the files
 parallel -a "${TO_CONVERT}" ffmpeg -nostdin -loglevel quiet -i "${LIBRARY}/{}.flac" -c:a libvorbis -q:a 8 "${MOBILE}/{}.ogg"
+
+#TODO: check for files in mobile which aren't in library, and delete them
+#   - would have to normalize the .flac/.ogg thing
 
 # cleanup
 rm "${FLACS}"
