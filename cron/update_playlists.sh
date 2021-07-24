@@ -31,9 +31,6 @@ done
 #   - move to mobile library.  this helps prevent a broken playlist from getting sent
 #   - remove the original file
 
-# for testing:
-cp /home/drake/5-stars.m3u "${WATCH_DIR}"
-
 for playlist in "${WATCH_DIR}/*.m3u"
 do
     base=$(basename ${playlist})
