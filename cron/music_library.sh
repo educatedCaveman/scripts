@@ -60,7 +60,7 @@ do
 done < "${FLACS}"
 
 # convert the files
-parallel -a "${TO_CONVERT}" ffmpeg -nostdin -loglevel quiet -i "${LIBRARY}/{}.flac" -c:a libvorbis -q:a 8 "${MOBILE}/{}.ogg"
+parallel -a "${TO_CONVERT}" ffmpeg -vn -nostdin -loglevel quiet -i "${LIBRARY}/{}.flac" -c:a libvorbis -q:a 8 "${MOBILE}/{}.ogg"
 
 #TODO: check for files in mobile which aren't in library, and delete them
 #   - would have to normalize the .flac/.ogg thing

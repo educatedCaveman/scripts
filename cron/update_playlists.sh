@@ -1,6 +1,6 @@
 #!/bin/bash
 LOCK="/tmp/playlist.lock"
-WATCH_DIR='/media/Music/convert_playlist'
+WATCH_DIR='/media/storage/convert_playlist'
 MOBILE="/media/storage/Music_(mobile)"
 PREFIX="/media/storage/Music"
 
