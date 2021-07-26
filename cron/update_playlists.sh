@@ -14,39 +14,22 @@ fi
 # if it isn't, create the lockfile
 touch "${LOCK}"
 
-# remove any .m3u files from /tmp
-# the current assumption is only .m3u files are relevant for all of this
-for file in "/tmp/*.m3u"
+for playlist in ${WATCH_DIR}/*.m3u
 do
-    if [ -e "${file}" ]
-    then
-        rm "${file}"
-    fi
-done
-
-# for each playlist file in watch directory:
-#   - copy to /tmp for processing
-#   - remove leading path specific to theseus
-#   - replace .flac extension with .ogg extension
-#   - move to mobile library.  this helps prevent a broken playlist from getting sent
-#   - remove the original file
-
-for playlist in "${WATCH_DIR}/*.m3u"
-do
-    base=$(basename ${playlist})
-    tmpfile="/tmp/${base}"
-    cp "${WATCH_DIR}/${base}" "${tmpfile}"
+    base=$(basename "${playlist}")
 
     # sanitization:
-    sed -i "s,${PREFIX}/,," "${tmpfile}"
-    sed -i 's/\.flac$/\.ogg/' "${tmpfile}"
+    sed -i "s,${PREFIX}/,," "${playlist}"
+    sed -i 's/\.flac$/\.ogg/' "${playlist}"
 
-    # move the playlist to the mobile library, and remove the source, if successful
-    if mv "${tmpfile}" "${MOBILE}"
+    # if the playlist already exists in the destination, remove it
+    if [ -e "${MOBILE}/${base}" ]
     then
-        rm "${WATCH_DIR}/${base}"
+        rm "${MOBILE}/${base}"
     fi
 
+    # move the sanitized playlist to the mobile library
+    mv "${playlist}" "${MOBILE}"
 done
 
 # remove lock file and any other tmp files
