@@ -14,22 +14,20 @@ fi
 # if it isn't, create the lockfile
 touch "${LOCK}"
 
-for playlist in ${WATCH_DIR}/*.m3u
+# cd ${WATCH_DIR}
+FILES="${WATCH_DIR}/*.m3u"
+for playlist in $FILES
 do
-    base=$(basename "${playlist}")
-
-    # sanitization:
-    sed -i "s,${PREFIX}/,," "${playlist}"
-    sed -i 's/\.flac$/\.ogg/' "${playlist}"
-
-    # if the playlist already exists in the destination, remove it
-    if [ -e "${MOBILE}/${base}" ]
+    if [ -e "$playlist" ]
     then
-        rm "${MOBILE}/${base}"
-    fi
+        # sanitization:
+        sed -i "s,${PREFIX}/,," "${playlist}"
+        sed -i 's/\.flac$/\.ogg/' "${playlist}"
 
-    # move the sanitized playlist to the mobile library
-    mv "${playlist}" "${MOBILE}"
+        # move the sanitized playlist to the mobile library
+        # overwrite the old playlist, if it exists.  create it if it doesn't
+        mv -f "${playlist}" "${MOBILE}/"
+    fi
 done
 
 # remove lock file and any other tmp files
