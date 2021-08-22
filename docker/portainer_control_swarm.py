@@ -41,6 +41,7 @@ def get_swarm_id(host, port, head):
         host=host, 
         port=port,
         endpointId=endpoint_id)
+    print(f"request url: {request_url}")
     r = requests.get(url=request_url, headers=head)
     if r.ok:
         data = json.loads(r.content)
