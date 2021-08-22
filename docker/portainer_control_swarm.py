@@ -44,6 +44,7 @@ def get_swarm_id(host, port, head):
     r = requests.get(url=request_url, headers=head)
     if r.ok:
         data = json.loads(r.content)
+        print(data)
         swarm_ID = data["ID"]
         # print(swarm_ID)
         return swarm_ID
