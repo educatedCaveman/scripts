@@ -10,7 +10,8 @@ import json
 
 #global variable:
 host, port, user, passwd, repo, branch, swarm_ID = None, None, None, None, None, None, None
-endpoint_id = 1
+# TODO: may need to get this ID dynamically
+endpoint_id = 2
 
 #helper functions:
 def get_api_token(host, port, user, passwd):
@@ -41,11 +42,11 @@ def get_swarm_id(host, port, head):
         host=host, 
         port=port,
         endpointId=endpoint_id)
-    print(f"request url: {request_url}")
+    # print(f"request url: {request_url}")
     r = requests.get(url=request_url, headers=head)
     if r.ok:
         data = json.loads(r.content)
-        print(data)
+        # print(data)
         swarm_ID = data["ID"]
         # print(swarm_ID)
         return swarm_ID
