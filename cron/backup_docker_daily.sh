@@ -5,7 +5,9 @@ host=$(/usr/bin/hostname)
 SRC="/docker/"
 DEST="/mnt/mobius/Backup/docker/${host}/"
 
-/usr/bin/rsync -au --delete "${SRC}" "${DEST}"
-
+if [ -e "${DEST}" ]
+then
+    /usr/bin/rsync -au --delete "${SRC}" "${DEST}"
+fi
 
 
