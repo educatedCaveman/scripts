@@ -2,10 +2,9 @@
 # TODO: account for temperature in what fan speed to set?
 
 # IDRAC_PW comes from .zsh_secrets
-# source $HOME/.zsh_secrets
+source $HOME/.zsh_secrets
 IPMI_HOST="192.168.1.7"
 USER_NAME="idrac_remote"
-IDRAC_PW="dFM3pTnMvEEvi5"
 IPMI_OPTS="-I lanplus -H $IPMI_HOST -U $USER_NAME -P $IDRAC_PW"
 #how many thousands of RPM should the fans be?
 TGT_K_RPM="3"
