@@ -107,6 +107,10 @@ if args.category in ("Movies", "TV_Shows"):
     clean_files_to_ignore(DEST, text_and_img_files)
     remove_empty_dirs(DEST)
 
+    # TODO: for movies:
+    # if all that is left is a single file in a single folder
+    # just move that file into the movies folder.
+
 # Music
 # should .log and .cue files be kept for music?  for now, yes
 elif args.category == "Music":
@@ -117,6 +121,7 @@ elif args.category == "Music":
 
 #other
 else:
+    # TODO: add handling for .iso and related files?
     pass
 
 # TODO: notification that files have been moved into the appropriate directory?
