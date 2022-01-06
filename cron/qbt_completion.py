@@ -1,5 +1,7 @@
 import argparse
-import json
+import shutil
+import os
+from pathlib import Path
 
 # Supported parameters (case sensitive):
 #     %N: Torrent name
@@ -24,14 +26,43 @@ import json
 # --tracker="%T"
 # --hash="%I"
 
+# takes a list of lower case files, duplicates them all as upper case, 
+# and returns the combined list
+def combine_upper_lower(lower):
+    upper = []
+    for file in lower:
+        upper.append(file.upper())
+    files = upper + lower
+    return files
+
+
+def clean_files_to_ignore(to_clean, to_ignore):
+    for ignore in to_ignore:
+        for path in Path(to_clean).rglob(ignore):
+            os.remove(path)
+
+
+def remove_empty_dirs(path, removeRoot=True):
+    'Function to remove empty folders'
+    if not os.path.isdir(path):
+        return
+
+    # remove empty subfolders
+    files = os.listdir(path)
+    if len(files):
+        for file in files:
+            fullpath = os.path.join(path, file)
+            if os.path.isdir(fullpath):
+                remove_empty_dirs(fullpath)
+
+    # if folder empty, delete it
+    files = os.listdir(path)
+    if len(files) == 0 and removeRoot:
+        print("Removing empty folder:", path)
+        os.rmdir(path)
 
 #argument parsing:
 parser = argparse.ArgumentParser(description='cleanup files on torrent completion')
-
-#get the environment, and the repo path:
-# parser.add_argument('--env', required=True, choices=['PRD', 'DEV'])
-# parser.add_argument('--repo', required=True, nargs=1, type=str)
-# parser.add_argument('--action', required=True, choices=['UP', 'DOWN', 'DOWNUP'])
 
 # recieve all the info from qBittorrent
 parser.add_argument('--name',       required=True, type=str)
@@ -47,34 +78,48 @@ parser.add_argument('--hash',       required=True, type=str)
 
 #parse the arguments
 args = parser.parse_args()
-print(type(args))
 
-data = {
-    "name": args.name,
-    "category": args.category,
-    "tags": args.tags,
-    "cpath": args.cpath,
-    "rpath": args.rpath,
-    "spath": args.spath,
-    "num": args.num,
-    "size": args.size,
-    "tracker": args.tracker,
-    "hash": args.hash
-}
-print(data)
+# TODO: notification that download has completed?
 
-# only include lower case. will call .lower() on all extensions
-text_files = ['nfo', 'txt', 'md']
-image_files = ['jpg', 'png', 'jpeg', 'gif', 'bmp', 'raw', 'tiff']
+# TODO: source these paths from an INI or something?
 destinations = {
     "Movies":   '/mnt/mobius/Video/Movies',
     "TV":       '/mnt/mobius/Video/TV-shows',
     "Music":    '/mnt/mobius/Music/staging',
     "other":    ''
 }
+text_files = combine_upper_lower(['*.nfo', '*.txt', '*.md'])
+img_files = combine_upper_lower(['*.jpg', '*.png', '*.jpeg', '*.gif', '*.bmp', '*.raw', '*.tiff'])
+# SOURCE = '/home/drake/test_src/'
+# DEST = '/home/drake/test_dest/'
 
+SOURCE = args.cpath
+
+# Movies/TV
+if args.category in ("Movies", "TV_Shows"):
+    # set the destination:
+    DEST = destinations["TV"]
+    if args.category == "Movies":
+        DEST = destinations["Movies"]
+
+    text_and_img_files = text_files + img_files
+    shutil.copytree(SOURCE, DEST)
+    clean_files_to_ignore(DEST, text_and_img_files)
+    remove_empty_dirs(DEST)
+
+# Music
 # should .log and .cue files be kept for music?  for now, yes
+elif args.category == "Music":
+    DEST = destinations["Music"]
+    shutil.copytree(SOURCE, DEST)
+    clean_files_to_ignore(DEST, text_files)
+    remove_empty_dirs(DEST)
 
+#other
+else:
+    pass
 
-with open('/tmp/test.txt', 'w', encoding='UTF-8') as my_file:
-    my_file.write(json.dumps(data))
+# TODO: notification that files have been moved into the appropriate directory?
+# send an output of the tree command in the message
+
+# trigger a rescan of the appropriate plex library?
