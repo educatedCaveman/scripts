@@ -1,32 +1,29 @@
 import argparse
+import json
 
+# Supported parameters (case sensitive):
+#     %N: Torrent name
+#     %L: Category
+#     %G: Tags (separated by comma)
+#     %F: Content path (same as root path for multifile torrent)
+#     %R: Root path (first torrent subdirectory path)
+#     %D: Save path
+#     %C: Number of files
+#     %Z: Torrent size (bytes)
+#     %T: Current tracker
+#     %I: Info hash
 
-"""
-Supported parameters (case sensitive):
-    %N: Torrent name
-    %L: Category
-    %G: Tags (separated by comma)
-    %F: Content path (same as root path for multifile torrent)
-    %R: Root path (first torrent subdirectory path)
-    %D: Save path
-    %C: Number of files
-    %Z: Torrent size (bytes)
-    %T: Current tracker
-    %I: Info hash
+# --name="%N"
+# --category="%L"
+# --tags="%G"
+# --cpath="%F"
+# --rpath="%R"
+# --spath="%D"
+# --num="%C"
+# --size="%Z"
+# --tracker="%T"
+# --hash="%I"
 
-Tip: Encapsulate parameter with quotation marks to avoid text being cut off at whitespace (e.g., "%N")
-
---name="%N"
---category="%L"
---tags="%G"
---cpath="%F"
---rpath="%R"
---spath="%D"
---num="%C"
---size="%Z"
---tracker="%T"
---hash="%I"
-"""
 
 #argument parsing:
 parser = argparse.ArgumentParser(description='cleanup files on torrent completion')
@@ -50,6 +47,21 @@ parser.add_argument('--hash',       required=True, type=str)
 
 #parse the arguments
 args = parser.parse_args()
+print(type(args))
+
+data = {
+    "name": args.name,
+    "category": args.category,
+    "tags": args.tags,
+    "cpath": args.cpath,
+    "rpath": args.rpath,
+    "spath": args.spath,
+    "num": args.num,
+    "size": args.size,
+    "tracker": args.tracker,
+    "hash": args.hash
+}
+print(data)
 
 # only include lower case. will call .lower() on all extensions
 text_files = ['nfo', 'txt', 'md']
@@ -64,10 +76,5 @@ destinations = {
 # should .log and .cue files be kept for music?  for now, yes
 
 
-with open('/tmp/test.txt', 'w') as my_file:
-    my_file.writelines(args)
-
-
-
-
-
+with open('/tmp/test.txt', 'w', encoding='UTF-8') as my_file:
+    my_file.write(json.dumps(data))
