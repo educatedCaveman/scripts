@@ -2,6 +2,10 @@ import argparse
 import shutil
 import os
 from pathlib import Path
+import requests
+import subprocess
+
+WEBHOOK = os.getenv('DISCORD_WEBHOOK_QBT')
 
 # --name=       "%N"    Torrent name
 # --category=   "%L"    Category
@@ -61,106 +65,143 @@ def copy_files(source, dest):
         shutil.copy(source, dest)
 
 
-#argument parsing:
-parser = argparse.ArgumentParser(description='cleanup files on torrent completion')
+def send_discord_message(webhook, message):
+    content = {
+        "content":  message
+    }
+    r = requests.post(webhook, data=content)
+    print(r.status_code)
 
-# recieve all the info from qBittorrent
-parser.add_argument('--name',       required=True, type=str)
-parser.add_argument('--category',   required=True, type=str)
-parser.add_argument('--tags',       required=True, type=str)
-parser.add_argument('--cpath',      required=True, type=str)
-parser.add_argument('--rpath',      required=True, type=str)
-parser.add_argument('--spath',      required=True, type=str)
-parser.add_argument('--num',        required=True, type=str)
-parser.add_argument('--size',       required=True, type=str)
-parser.add_argument('--tracker',    required=True, type=str)
-parser.add_argument('--hash',       required=True, type=str)
 
-#parse the arguments
-args = parser.parse_args()
+def error_message(webhook, error):
+    body = f"""The qBittorrent completion script (qbt_completion.py) failed with the following error:
 
-# TODO: notification that download has completed?
+        ```python
+        {error}
+        ```
+        """
+    send_discord_message(webhook=webhook, message=body)
 
-# TODO: source these paths from an INI or something?
-destinations = {
-    "Movies":   '/mnt/mobius/Video/Movies',
-    "TV":       '/mnt/mobius/Video/TV-shows',
-    "Music":    '/mnt/mobius/Music/staging',
-    "other":    ''
-}
-text_files = combine_upper_lower(['*.nfo', '*.txt', '*.md'])
-img_files = combine_upper_lower(['*.jpg', '*.png', '*.jpeg', '*.gif', '*.bmp', '*.raw', '*.tiff'])
 
-SOURCE = args.cpath
+def send_notification(webhook, path, args):
+    destination_path = str(path + '/' + args.name)
+    cmd = ['tree', destination_path]
+    tree = subprocess.run(cmd, capture_output=True, text=True)    
+    body = f"""A download has completed:
 
-# Movies/TV
-if args.category in ("Movies", "TV_Shows"):
-    print('we have a movie or a TV show')
-    # set the destination:
-    DEST = destinations["TV"]
-    if args.category == "Movies":
-        DEST = destinations["Movies"]
+        {args.name}
 
-    # combine file types to ignore/remove
-    text_and_img_files = text_files + img_files
+        {tree}
 
-    # if the source is a directory, more things need doing
-    # - copy files to new folder
-    # - clean up undesired files
-    # - remove empty directories
-    # - if there is a single file in the top directory:
-    #   - move that one level higher
-    #   - remove the directory
-    if os.path.isdir(SOURCE):
-        print('source is a directory')
+        if this looks wrong, manually investigate
+    
+    """    
+    send_discord_message(webhook=webhook, message=body)
 
-        # get the containing folder and create the destination path (folder)
+
+def main():
+    #argument parsing:
+    parser = argparse.ArgumentParser(description='cleanup files on torrent completion')
+
+    # recieve all the info from qBittorrent
+    parser.add_argument('--name',       required=True, type=str)
+    parser.add_argument('--category',   required=True, type=str)
+    parser.add_argument('--tags',       required=True, type=str)
+    parser.add_argument('--cpath',      required=True, type=str)
+    parser.add_argument('--rpath',      required=True, type=str)
+    parser.add_argument('--spath',      required=True, type=str)
+    parser.add_argument('--num',        required=True, type=str)
+    parser.add_argument('--size',       required=True, type=str)
+    parser.add_argument('--tracker',    required=True, type=str)
+    parser.add_argument('--hash',       required=True, type=str)
+
+    #parse the arguments
+    args = parser.parse_args()
+
+    # TODO: source these paths from an INI or something?
+    destinations = {
+        "Movies":   '/mnt/mobius/Video/Movies',
+        "TV":       '/mnt/mobius/Video/TV-shows',
+        "Music":    '/mnt/mobius/Music/staging',
+        # "other":    '/mnt/mobius/staging/'
+    }
+    text_files = combine_upper_lower(['*.nfo', '*.txt', '*.md'])
+    img_files = combine_upper_lower(['*.jpg', '*.png', '*.jpeg', '*.gif', '*.bmp', '*.raw', '*.tiff'])
+
+    SOURCE = args.cpath
+
+    # Movies/TV
+    if args.category in ("Movies", "TV_Shows"):
+        print('we have a movie or a TV show')
+        # set the destination:
+        DEST = destinations["TV"]
+        if args.category == "Movies":
+            DEST = destinations["Movies"]
+
+        # combine file types to ignore/remove
+        text_and_img_files = text_files + img_files
+
+        # if the source is a directory, more things need doing
+        # - copy files to new folder
+        # - clean up undesired files
+        # - remove empty directories
+        # - if there is a single file in the top directory:
+        #   - move that one level higher
+        #   - remove the directory
+        if os.path.isdir(SOURCE):
+            print('source is a directory')
+
+            # get the containing folder and create the destination path (folder)
+            folder = SOURCE.split('/')[-1]
+            dest_dir = str(DEST + '/' + folder)
+
+            copy_files(SOURCE, dest_dir)
+            clean_files_to_ignore(DEST, text_and_img_files)
+
+            # only clean the new directory
+            remove_empty_dirs(dest_dir)
+
+            # handle single files in a folder
+            num_files = len(os.listdir(dest_dir))
+            if num_files == 1:
+                file_name = os.listdir(dest_dir)[0]
+                source_path = str(dest_dir + '/' + file_name)
+                shutil.move(source_path, DEST)
+                os.rmdir(dest_dir)
+            else:
+                # multiple files/folders remaining
+                pass
+
+        # if the source is a single file, things are simple
+        # really only applies to movies
+        else:
+            # no need to clean files, or remove empty dirs
+            copy_files(SOURCE, DEST)
+
+    # Music
+    # should .log and .cue files be kept for music?  for now, yes
+    elif args.category == "Music":
+        # because music is almost always going to be a directory, things are simplified
+        DEST = destinations["Music"]
         folder = SOURCE.split('/')[-1]
         dest_dir = str(DEST + '/' + folder)
 
         copy_files(SOURCE, dest_dir)
-        clean_files_to_ignore(DEST, text_and_img_files)
+        clean_files_to_ignore(DEST, text_files)
 
         # only clean the new directory
         remove_empty_dirs(dest_dir)
 
-        # handle single files in a folder
-        num_files = len(os.listdir(dest_dir))
-        if num_files == 1:
-            file_name = os.listdir(dest_dir)[0]
-            source_path = str(dest_dir + '/' + file_name)
-            shutil.move(source_path, DEST)
-            os.rmdir(dest_dir)
-        else:
-            # multiple files/folders remaining
-            pass
+    # #other
+    # else:
+    #     # TODO: add handling for .iso and related files?
+    #     pass
 
-    # if the source is a single file, things are simple
-    # really only applies to movies
-    else:
-        # no need to clean files, or remove empty dirs
-        copy_files(SOURCE, DEST)
+    # TODO: trigger a rescan of the appropriate plex library?
+    send_notification(WEBHOOK, DEST, args)
 
-# Music
-# should .log and .cue files be kept for music?  for now, yes
-elif args.category == "Music":
-    # because music is almost always going to be a directory, things are simplified
-    DEST = destinations["Music"]
-    folder = SOURCE.split('/')[-1]
-    dest_dir = str(DEST + '/' + folder)
-
-    copy_files(SOURCE, dest_dir)
-    clean_files_to_ignore(DEST, text_files)
-
-    # only clean the new directory
-    remove_empty_dirs(dest_dir)
-
-#other
-else:
-    # TODO: add handling for .iso and related files?
-    pass
-
-# TODO: notification that files have been moved into the appropriate directory?
-# send an output of the tree command in the message
-
-# trigger a rescan of the appropriate plex library?
+if __name__=="__main__":
+    try:
+        main()
+    except Exception as e:
+        error_message(WEBHOOK, e)
