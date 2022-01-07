@@ -3,30 +3,18 @@ import shutil
 import os
 from pathlib import Path
 
-# Supported parameters (case sensitive):
-#     %N: Torrent name
-#     %L: Category
-#     %G: Tags (separated by comma)
-#     %F: Content path (same as root path for multifile torrent)
-#     %R: Root path (first torrent subdirectory path)
-#     %D: Save path
-#     %C: Number of files
-#     %Z: Torrent size (bytes)
-#     %T: Current tracker
-#     %I: Info hash
+# --name=       "%N"    Torrent name
+# --category=   "%L"    Category
+# --tags=       "%G"    Tags (separated by comma)
+# --cpath=      "%F"    Content path (same as root path for multifile torrent)
+# --rpath=      "%R"    Root path (first torrent subdirectory path)
+# --spath=      "%D"    Save path
+# --num=        "%C"    Number of files
+# --size=       "%Z"    Torrent size (bytes)
+# --tracker=    "%T"    Current tracker
+# --hash=       "%I"    Info hash
 
-# --name="%N"
-# --category="%L"
-# --tags="%G"
-# --cpath="%F"
-# --rpath="%R"
-# --spath="%D"
-# --num="%C"
-# --size="%Z"
-# --tracker="%T"
-# --hash="%I"
-
-# takes a list of lower case files, duplicates them all as upper case, 
+# takes a list of lower case files, duplicates them all as upper case,
 # and returns the combined list
 def combine_upper_lower(lower):
     upper = []
@@ -43,7 +31,6 @@ def clean_files_to_ignore(to_clean, to_ignore):
 
 
 def remove_empty_dirs(path, removeRoot=True):
-    'Function to remove empty folders'
     if not os.path.isdir(path):
         return
 
@@ -62,8 +49,8 @@ def remove_empty_dirs(path, removeRoot=True):
         os.rmdir(path)
 
 
-# must handle the copy differently depending on if its a dir or a file 
-def copy_files(source, dest):   
+# must handle the copy differently depending on if its a dir or a file
+def copy_files(source, dest):
 
     # directory
     if os.path.isdir(source):
@@ -72,6 +59,7 @@ def copy_files(source, dest):
     # file
     else:
         shutil.copy(source, dest)
+
 
 #argument parsing:
 parser = argparse.ArgumentParser(description='cleanup files on torrent completion')
@@ -102,40 +90,70 @@ destinations = {
 }
 text_files = combine_upper_lower(['*.nfo', '*.txt', '*.md'])
 img_files = combine_upper_lower(['*.jpg', '*.png', '*.jpeg', '*.gif', '*.bmp', '*.raw', '*.tiff'])
-# SOURCE = '/home/drake/test_src/'
-# DEST = '/home/drake/test_dest/'
 
 SOURCE = args.cpath
 
-#TODO: handle single files
-# copytree doesn't work if its a single file
-
-
 # Movies/TV
 if args.category in ("Movies", "TV_Shows"):
+    print('we have a movie or a TV show')
     # set the destination:
     DEST = destinations["TV"]
     if args.category == "Movies":
         DEST = destinations["Movies"]
 
+    # combine file types to ignore/remove
     text_and_img_files = text_files + img_files
-    # shutil.copytree(SOURCE, DEST)
-    copy_files(SOURCE, DEST)
-    clean_files_to_ignore(DEST, text_and_img_files)
-    remove_empty_dirs(DEST)
 
-    # TODO: for movies:
-    # if all that is left is a single file in a single folder
-    # just move that file into the movies folder.
+    # if the source is a directory, more things need doing
+    # - copy files to new folder
+    # - clean up undesired files
+    # - remove empty directories
+    # - if there is a single file in the top directory:
+    #   - move that one level higher
+    #   - remove the directory
+    if os.path.isdir(SOURCE):
+        print('source is a directory')
+
+        # get the containing folder and create the destination path (folder)
+        folder = SOURCE.split('/')[-1]
+        dest_dir = str(DEST + '/' + folder)
+
+        copy_files(SOURCE, dest_dir)
+        clean_files_to_ignore(DEST, text_and_img_files)
+
+        # only clean the new directory
+        remove_empty_dirs(dest_dir)
+
+        # handle single files in a folder
+        num_files = len(os.listdir(dest_dir))
+        if num_files == 1:
+            file_name = os.listdir(dest_dir)[0]
+            source_path = str(dest_dir + '/' + file_name)
+            shutil.move(source_path, DEST)
+            os.rmdir(dest_dir)
+        else:
+            # multiple files/folders remaining
+            pass
+
+    # if the source is a single file, things are simple
+    # really only applies to movies
+    else:
+        # no need to clean files, or remove empty dirs
+        copy_files(SOURCE, DEST)
 
 # Music
 # should .log and .cue files be kept for music?  for now, yes
 elif args.category == "Music":
+    # because music is almost always going to be a directory, things are simplified
     DEST = destinations["Music"]
-    # shutil.copytree(SOURCE, DEST)
-    copy_files(SOURCE, DEST)
+    folder = SOURCE.split('/')[-1]
+    dest_dir = str(DEST + '/' + folder)
+
+    copy_files(SOURCE, dest_dir)
     clean_files_to_ignore(DEST, text_files)
-    remove_empty_dirs(DEST)
+
+    # only clean the new directory
+    remove_empty_dirs(dest_dir)
 
 #other
 else:
