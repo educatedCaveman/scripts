@@ -85,17 +85,24 @@ def error_message(webhook, error):
 
 def send_notification(webhook, path, args):
     destination_path = str(path + '/' + args.name)
-    cmd = ['tree', destination_path]
-    tree = subprocess.run(cmd, capture_output=True, text=True)    
-    body = f"""A download has completed:
+    if os.path.isdir(destination_path):
+        cmd = ['tree', destination_path]
+        tree = subprocess.run(cmd, capture_output=True, text=True)    
+        body = f"""A download has completed:
 
-        {args.name}
+            {args.name}
 
-        {tree}
+            {tree}
 
-        if this looks wrong, manually investigate
-    
-    """    
+            if this looks wrong, manually investigate
+        
+        """
+    else:
+        body = f"""A download has completed:
+
+            {args.name}
+        
+        """
     send_discord_message(webhook=webhook, message=body)
 
 
