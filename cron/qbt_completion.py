@@ -61,6 +61,18 @@ def remove_empty_dirs(path, removeRoot=True):
         print("Removing empty folder:", path)
         os.rmdir(path)
 
+
+# must handle the copy differently depending on if its a dir or a file 
+def copy_files(source, dest):   
+
+    # directory
+    if os.path.isdir(source):
+        shutil.copytree(source, dest)
+
+    # file
+    else:
+        shutil.copy(source, dest)
+
 #argument parsing:
 parser = argparse.ArgumentParser(description='cleanup files on torrent completion')
 
@@ -95,6 +107,10 @@ img_files = combine_upper_lower(['*.jpg', '*.png', '*.jpeg', '*.gif', '*.bmp', '
 
 SOURCE = args.cpath
 
+#TODO: handle single files
+# copytree doesn't work if its a single file
+
+
 # Movies/TV
 if args.category in ("Movies", "TV_Shows"):
     # set the destination:
@@ -103,7 +119,8 @@ if args.category in ("Movies", "TV_Shows"):
         DEST = destinations["Movies"]
 
     text_and_img_files = text_files + img_files
-    shutil.copytree(SOURCE, DEST)
+    # shutil.copytree(SOURCE, DEST)
+    copy_files(SOURCE, DEST)
     clean_files_to_ignore(DEST, text_and_img_files)
     remove_empty_dirs(DEST)
 
@@ -115,7 +132,8 @@ if args.category in ("Movies", "TV_Shows"):
 # should .log and .cue files be kept for music?  for now, yes
 elif args.category == "Music":
     DEST = destinations["Music"]
-    shutil.copytree(SOURCE, DEST)
+    # shutil.copytree(SOURCE, DEST)
+    copy_files(SOURCE, DEST)
     clean_files_to_ignore(DEST, text_files)
     remove_empty_dirs(DEST)
 
