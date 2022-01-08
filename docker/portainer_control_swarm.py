@@ -210,6 +210,10 @@ for file in changed_files:
                 to_delete.append(tmp[0])
                 print('delete stack: {}'.format(tmp[0]))
 
+#TODO: need to dedup the lists:
+to_recreate = list(dict.fromkeys(to_recreate))
+to_delete = list(dict.fromkeys(to_delete))
+
 # bring stacks down:
 if args.action == 'DOWN':
     #delete stacks that dont need to be re-created
