@@ -5,14 +5,16 @@ from datetime import datetime
 import os
 from glob import glob
 import subprocess
-from slack_webhook import Slack
+# from slack_webhook import Slack
+import requests
 
 path = '/mnt/mobius/Backup/pihole'
 d = datetime.today()
 d_str = d.strftime("%F")
 pi_file = 'pi-hole-singularity-teleporter_{}_*.tar.gz'.format(d_str)
 #TODO: get pihole specific webhook
-webhook = os.getenv('SLACK_WEBHOOK_PIHOLE')
+# webhook = os.getenv('SLACK_WEBHOOK_PIHOLE')
+webhook = os.getenv('DISCORD_WEBHOOK_PIHOLE')
 def nfs_not_mounted():
     # print('NFS not mounted')
     cmd = ['df', '-h']
@@ -28,8 +30,10 @@ def nfs_not_mounted():
     manual investigation is necessary.
     """.format(res.stdout)
 
-    slack = Slack(url=webhook)
-    slack.post(text=message)
+    # slack = Slack(url=webhook)
+    # slack.post(text=message)
+    requests.post(webhook, data=message)
+
 
 def backup_not_found():
     ls = subprocess.Popen(['ls', '-lt', path], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
@@ -45,8 +49,9 @@ def backup_not_found():
     manual investigation is necessary.
     """.format(res[0])
 
-    slack = Slack(url=webhook)
-    slack.post(text=message)
+    # slack = Slack(url=webhook)
+    # slack.post(text=message)
+    requests.post(webhook, data=message)
 
 
 def backup_found():
@@ -60,8 +65,9 @@ def backup_found():
     Qapla'!
     """.format(res[0])
 
-    slack = Slack(url=webhook)
-    slack.post(text=message)
+    # slack = Slack(url=webhook)
+    # slack.post(text=message)
+    requests.post(webhook, data=message)
 
 
 # main logic:
