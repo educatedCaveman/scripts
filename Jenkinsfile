@@ -3,6 +3,7 @@ pipeline {
     environment {
         ANSIBLE_REPO = '/var/lib/jenkins/workspace/ansible_master'
         SCRIPTS_REPO = '/var/lib/jenkins/workspace/scripts_master'
+        WEBHOOK = credentials('JENKINS_DISCORD')
     }
 
     //triggering periodically so the code is always present
@@ -17,6 +18,17 @@ pipeline {
                 echo "deploying scripts to drake's home directory"
                 sh 'ansible-playbook ${ANSIBLE_REPO}/deploy/deploy_scripts.yml'
             }
+        }
+    }
+    post {
+        always {
+            discordSend \
+                description: "${JOB_NAME} - build #${BUILD_NUMBER}", \
+                // footer: "Footer Text", \
+                // link: env.BUILD_URL, \
+                result: currentBuild.currentResult, \
+                // title: JOB_NAME, \
+                webhookURL: "${WEBHOOK}"
         }
     }
 }
