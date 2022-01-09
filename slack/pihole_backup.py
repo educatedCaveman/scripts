@@ -30,9 +30,10 @@ def nfs_not_mounted():
     manual investigation is necessary.
     """.format(res.stdout)
 
-    # slack = Slack(url=webhook)
-    # slack.post(text=message)
-    requests.post(webhook, data=message)
+    content = {
+        "content":  message
+    }
+    requests.post(webhook, data=content)
 
 
 def backup_not_found():
@@ -49,9 +50,10 @@ def backup_not_found():
     manual investigation is necessary.
     """.format(res[0])
 
-    # slack = Slack(url=webhook)
-    # slack.post(text=message)
-    requests.post(webhook, data=message)
+    content = {
+        "content":  message
+    }
+    requests.post(webhook, data=content)
 
 
 def backup_found():
@@ -65,9 +67,10 @@ def backup_found():
     Qapla'!
     """.format(res[0])
 
-    # slack = Slack(url=webhook)
-    # slack.post(text=message)
-    requests.post(webhook, data=message)
+    content = {
+        "content":  message
+    }
+    requests.post(webhook, data=content)
 
 
 # main logic:
