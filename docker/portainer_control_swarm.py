@@ -16,7 +16,7 @@ endpoint_id = 2
 #helper functions:
 def get_api_token(host, port, user, passwd):
     #TODO: check for existing token, and use it. if invalid, get and store new token
-    request_url = 'http://{host}:{port}/api/auth'.format(host=host, port=port)
+    request_url = 'https://{host}:{port}/api/auth'.format(host=host, port=port)
     body = {
         "Username": "{}".format(user),
         "Password": "{}".format(passwd)
@@ -38,7 +38,7 @@ def get_api_token(host, port, user, passwd):
 
 def get_swarm_id(host, port, head):
     # assumes we already have our token
-    request_url = 'http://{host}:{port}/api/endpoints/{endpointId}/docker/swarm'.format(
+    request_url = 'https://{host}:{port}/api/endpoints/{endpointId}/docker/swarm'.format(
         host=host, 
         port=port,
         endpointId=endpoint_id)
@@ -62,7 +62,7 @@ def remove_stack_by_name(host, port, head, name, endpoint_id):
     #need to get stack_id by parsing the list, and passing it to remove_stack_by_id()
 
     #get stacks:
-    request_url = 'http://{host}:{port}/api/stacks'.format(host=host, port=port)
+    request_url = 'https://{host}:{port}/api/stacks'.format(host=host, port=port)
     r = requests.get(url = request_url, headers=head)
 
     #search response
@@ -87,7 +87,7 @@ def remove_stack_by_name(host, port, head, name, endpoint_id):
 
 
 def remove_stack_by_id(host, port, head, stack_id, endpoint_id):
-    request_url = 'http://{host}:{port}/api/stacks/{stack_id}?endpointId={endpointId}'.format(
+    request_url = 'https://{host}:{port}/api/stacks/{stack_id}?endpointId={endpointId}'.format(
         host=host, 
         port=port,
         stack_id=stack_id,
@@ -102,7 +102,7 @@ def remove_stack_by_id(host, port, head, stack_id, endpoint_id):
 
 
 def create_stack(host, port, head, endpoint_id, repo, branch, name, swarm_ID):
-    request_url = 'http://{host}:{port}/api/stacks?method=repository&type=1&endpointId={endpoint}'.format(
+    request_url = 'https://{host}:{port}/api/stacks?method=repository&type=1&endpointId={endpoint}'.format(
         host=host, 
         port=port, 
         endpoint=endpoint_id)
