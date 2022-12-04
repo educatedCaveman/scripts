@@ -19,9 +19,6 @@ def send_message(webhook, message):
     return r
 
 
-webhook = "https://discordapp.com/api/webhooks/973698699819647026/wIPNb7aw6lUXgqkNguGZn7aXTpbX0VpXKOzbEFJHIqRTfp6iIW3LnWzQSNhW1wUnAt3S/?image=yes"
-send_message(webhook, "test_image_embed")
-
 
 
 
