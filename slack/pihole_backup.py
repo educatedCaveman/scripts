@@ -128,7 +128,7 @@ def version_check():
 
 
     # if new version, check if the version_file exists
-    version_file_path = '/'.join(path, version_file)
+    version_file_path = '/'.join([path, version_file])
     version_file_exists = os.path.isfile(version_file_path)
     if version_diff:
         # if there is a new version, and we don't already have a version_file, 
