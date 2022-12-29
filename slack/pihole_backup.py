@@ -114,7 +114,7 @@ def version_check():
 
     if cur_ver['pihole'] != max_ver['pihole']:
         pihole_diff = True
-        diff_details.append(['Pi-hole', cur_ver['pihole'], max_ver['pihole']])
+        diff_details.append(['Pi-Hole', cur_ver['pihole'], max_ver['pihole']])
 
     if cur_ver['adminLTE'] != max_ver['adminLTE']:
         admin_diff = True
@@ -136,7 +136,7 @@ def version_check():
         # if we have a version file already, do nothing
         if not version_file_exists:
             # TODO: send notification
-            headers = ['Component', 'Current Version', 'Latest Versioni']
+            headers = ['Component', 'Current Version', 'Latest Version']
             update_details = tabulate(diff_details, headers, tablefmt='fancy_grid')
             message = f"There is an update for Pi-Hole available:\n```{update_details}```"
             content = {
@@ -146,7 +146,7 @@ def version_check():
 
             # create version file
             with open(version_file_path, 'w') as f:
-                f.write(max_ver)
+                f.write(str(max_ver))
 
     # if there isn't a new version, but there is a version file, remove the version file
     elif version_file_exists:
