@@ -16,6 +16,13 @@ PW = getpass.getpass("navidrome password? (text hidden):")
 def get_auth_payload(username=UN, password=PW, version='1.16.1', client='python') -> dictionary:
     salt = os.urandom(6).hex()
     token = hashlib.md5(f"{password}{salt}".encode('utf-8')).hexdigest()
+    print({
+        'u': username, 
+        't': token, 
+        's': salt, 
+        'v': version, 
+        'c': client
+    })
     return {
         'u': username, 
         't': token, 
